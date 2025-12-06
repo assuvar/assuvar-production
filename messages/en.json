@@ -1,0 +1,34 @@
+{
+    "Hero": {
+        "systemStatus": "System Operational: V 4.2.0 Active",
+        "title": "Engineer Your Digital",
+        "subtitle": "Structural Integrity",
+        "description": "The complete IT backbone for modern enterprises. We fuse resilient infrastructure with cutting-edge software to build, scale, and sustain.",
+        "initializeBtn": "Initialize Architecture",
+        "viewTechStackBtn": "View Tech Stack",
+        "liveTopology": "Live Topology",
+        "realTimeMapping": "Real-time infrastructure mapping",
+        "loadBalancer": "LOAD_BALANCER",
+        "threatVector": "THREAT_VECTOR",
+        "secured": "Secured",
+        "intrusions": "0 Intrusions",
+        "nodeStatus": "NODE_STATUS",
+        "core": "CORE",
+        "cdn": "CDN"
+    },
+    "Navbar": {
+        "services": "Services",
+        "solutions": "Solutions",
+        "enterprise": "Enterprise",
+        "insights": "Insights",
+        "getConsultation": "Get Consultation",
+        "infrastructure": "Infrastructure",
+        "security": "Security",
+        "cloudArchitecture": "Cloud Architecture",
+        "hybridSystems": "Hybrid Systems",
+        "dataCenters": "Data Centers",
+        "cyberDefense": "Cyber Defense",
+        "complianceAudit": "Compliance Audit",
+        "zeroTrust": "Zero Trust"
+    }
+}

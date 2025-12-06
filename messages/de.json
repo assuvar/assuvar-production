@@ -1,0 +1,34 @@
+{
+  "Hero": {
+    "systemStatus": "System Betriebsbereit: V 4.2.0 Aktiv",
+    "title": "Gestalten Sie Ihre digitale Zukunft",
+    "subtitle": "Strukturelle Integrität",
+    "description": "Das komplette IT-Rückgrat für moderne Unternehmen. Wir verbinden widerstandsfähige Infrastruktur mit modernster Software, um zu bauen, zu skalieren und zu erhalten.",
+    "initializeBtn": "Architektur initialisieren",
+    "viewTechStackBtn": "Tech-Stack ansehen",
+    "liveTopology": "Live-Topologie",
+    "realTimeMapping": "Echtzeit-Infrastruktur-Mapping",
+    "loadBalancer": "LASTVERTEILER",
+    "threatVector": "BEDROHUNGSVEKTOR",
+    "secured": "Gesichert",
+    "intrusions": "0 Eindringlinge",
+    "nodeStatus": "KNOTENSTATUS",
+    "core": "KERN",
+    "cdn": "CDN"
+  },
+  "Navbar": {
+    "services": "Dienstleistungen",
+    "solutions": "Lösungen",
+    "enterprise": "Unternehmen",
+    "insights": "Einblicke",
+    "getConsultation": "Beratung erhalten",
+    "infrastructure": "Infrastruktur",
+    "security": "Sicherheit",
+    "cloudArchitecture": "Cloud-Architektur",
+    "hybridSystems": "Hybride Systeme",
+    "dataCenters": "Rechenzentren",
+    "cyberDefense": "Cyber-Abwehr",
+    "complianceAudit": "Compliance-Audit",
+    "zeroTrust": "Zero Trust"
+  }
+}

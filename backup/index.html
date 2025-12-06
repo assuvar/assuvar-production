@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Structura IT • Next-Gen Infrastructure</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        structura: {
+                            black: '#11131E', // Black Eclipse
+                            dark: '#0B0C14',
+                            blue: '#6767FF',  // Periwinkle Blue
+                            blueLight: '#8a8aff',
+                            amber: '#f59e0b',
+                            light: '#F8FAFD', // Cloud White
+                            border: '#e2e8f0',
+                            surface: '#ffffff'
+                        }
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, #e2e8f0 1px, transparent 1px), linear-gradient(to bottom, #e2e8f0 1px, transparent 1px)",
+                        'blueprint-glow': "radial-gradient(circle at 50% 0%, rgba(103, 103, 255, 0.15) 0%, transparent 60%)",
+                    },
+                    animation: {
+                        'scroll': 'scroll 40s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 20s linear infinite',
+                        'spin-reverse': 'spin-reverse 25s linear infinite',
+                    },
+                    keyframes: {
+                        scroll: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-50%)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        'spin-reverse': {
+                            'from': { transform: 'rotate(360deg)' },
+                            'to': { transform: 'rotate(0deg)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8FAFD;
+            color: #11131E;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, .font-display {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* --- UI UTILITIES --- */
+        
+        /* Wireframe Grid Background */
+        .wire-bg {
+            background-size: 40px 40px;
+            mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+        }
+
+        /* Glass Navigation */
+        .nav-glass {
+            background: rgba(248, 250, 253, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+        }
+
+        /* Enterprise Card Styling */
+        .card-enterprise {
+            background: white;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            z-index: 1;
+        }
+        .card-enterprise::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+        .card-enterprise:hover {
+            transform: translateY(-4px);
+            border-color: #6767FF;
+        }
+        .card-enterprise:hover::after {
+            opacity: 1;
+            box-shadow: 0 20px 25px -5px rgba(103, 103, 255, 0.1), 0 8px 10px -6px rgba(103, 103, 255, 0.1);
+        }
+
+        /* --- BUTTON ANIMATIONS --- */
+
+        @keyframes stripe-flow {
+            0% { background-position: 0 0; }
+            100% { background-position: 56px 0; }
+        }
+
+        /* Fusion Button */
+        .btn-fusion {
+            background: #11131E;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .btn-fusion::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                -45deg,
+                #6767FF,
+                #6767FF 20px,
+                #5858E6 20px,
+                #5858E6 40px
+            );
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-fusion:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -6px rgba(103, 103, 255, 0.4);
+            border-color: #6767FF;
+        }
+
+        .btn-fusion:hover::before {
+            opacity: 1;
+            animation: stripe-flow 1.5s linear infinite;
+        }
+
+        /* Secondary Button */
+        .btn-secondary {
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: #334155;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                -45deg,
+                #ffffff,
+                #ffffff 20px,
+                #f1f5f9 20px,
+                #f1f5f9 40px
+            );
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            border-color: #cbd5e1;
+            color: #11131E;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .btn-secondary:hover::before {
+            opacity: 1;
+            animation: stripe-flow 1.5s linear infinite;
+        }
+
+        /* Gradient Text */
+        .text-gradient {
+            background: linear-gradient(135deg, #11131E 0%, #6767FF 50%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Mega Menu */
+        .group:hover .mega-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* --- TIMELINE COMPONENT STYLES --- */
+        .timeline-tab {
+            transition: all 0.3s ease;
+        }
+        .timeline-tab.active {
+            background-color: white;
+            border-left-color: #6767FF;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        .timeline-tab p {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .timeline-tab.active p {
+            max-height: 100px;
+            opacity: 1;
+            margin-top: 0.5rem;
+        }
+        .progress-bar-bg {
+            width: 100%;
+            height: 2px;
+            background-color: #e2e8f0;
+            margin-top: 1rem;
+            border-radius: 2px;
+            overflow: hidden;
+            display: none;
+        }
+        .timeline-tab.active .progress-bar-bg {
+            display: block;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #6767FF;
+            width: 0%;
+        }
+        .timeline-tab.active .progress-fill {
+            animation: fillProgress 5s linear forwards;
+        }
+        @keyframes fillProgress {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+        .feature-card {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s ease;
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+        .feature-card.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+    </style>
+</head>
+<body class="antialiased selection:bg-structura-blue selection:text-white">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full top-0 z-50 nav-glass">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-2 group z-50">
+                <div class="w-8 h-8 bg-structura-black text-white flex items-center justify-center rounded-lg shadow-lg group-hover:rotate-90 transition-transform duration-500">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
+                </div>
+                <span class="text-xl font-display font-bold tracking-tight">Structura<span class="text-structura-blue">IT</span></span>
+            </a>
+
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
+                <div class="relative group h-20 flex items-center cursor-pointer">
+                    <span class="group-hover:text-structura-black transition-colors flex items-center gap-1">
+                        Services <i data-lucide="chevron-down" class="w-3 h-3"></i>
+                    </span>
+                    <div class="mega-menu absolute top-20 left-1/2 -translate-x-1/2 w-[600px] bg-white border border-structura-border shadow-xl rounded-xl p-6 opacity-0 visibility-hidden transition-all duration-200 transform translate-y-2 pointer-events-none group-hover:pointer-events-auto">
+                        <div class="grid grid-cols-2 gap-6">
+                            <div>
+                                <h5 class="font-display font-bold text-structura-black mb-3">Infrastructure</h5>
+                                <ul class="space-y-2">
+                                    <li><a href="#" class="block hover:text-structura-blue hover:translate-x-1 transition-all">Cloud Architecture</a></li>
+                                    <li><a href="#" class="block hover:text-structura-blue hover:translate-x-1 transition-all">Hybrid Systems</a></li>
+                                    <li><a href="#" class="block hover:text-structura-blue hover:translate-x-1 transition-all">Data Centers</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-display font-bold text-structura-black mb-3">Security</h5>
+                                <ul class="space-y-2">
+                                    <li><a href="#" class="block hover:text-structura-blue hover:translate-x-1 transition-all">Cyber Defense</a></li>
+                                    <li><a href="#" class="block hover:text-structura-blue hover:translate-x-1 transition-all">Compliance Audit</a></li>
+                                    <li><a href="#" class="block hover:text-structura-blue hover:translate-x-1 transition-all">Zero Trust</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" class="hover:text-structura-black transition-colors">Solutions</a>
+                <a href="#" class="hover:text-structura-black transition-colors">Enterprise</a>
+                <a href="#" class="hover:text-structura-black transition-colors">Insights</a>
+            </div>
+
+            <div class="hidden md:flex items-center gap-6">
+                <div class="flex items-center gap-1 text-xs font-semibold text-slate-500 cursor-pointer hover:text-structura-black">
+                    <i data-lucide="globe" class="w-3 h-3"></i> EN
+                </div>
+                <div class="h-4 w-px bg-slate-300"></div>
+                <a href="#" class="btn-fusion px-5 py-2.5 rounded-lg text-sm font-semibold">
+                    Get Consultation
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <main class="pt-32 pb-24 relative overflow-hidden">
+        <div class="absolute inset-0 bg-grid-pattern wire-bg -z-20 opacity-60 pointer-events-none"></div>
+        <div class="absolute inset-0 bg-blueprint-glow -z-10 pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-6 text-center relative z-10">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-structura-border shadow-sm text-xs font-semibold text-structura-blue mb-8 uppercase tracking-wider">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-structura-blue opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-structura-blue"></span>
+                </span>
+                System Operational: V 4.2.0 Active
+            </div>
+
+            <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-8 leading-[1.1] text-structura-black">
+                Engineer Your Digital <br/>
+                <span class="text-gradient">Structural Integrity</span>
+            </h1>
+
+            <p class="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto mb-12 leading-relaxed font-light">
+                The complete IT backbone for modern enterprises. We fuse resilient infrastructure with cutting-edge software to build, scale, and sustain.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-24">
+                <button class="btn-fusion px-8 py-4 rounded-xl text-base font-semibold w-full sm:w-auto shadow-xl shadow-structura-blue/20">
+                    Initialize Architecture
+                </button>
+                <button class="btn-secondary px-8 py-4 rounded-xl text-slate-700 font-semibold w-full sm:w-auto flex items-center justify-center gap-2 group">
+                    View Tech Stack
+                    <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                </button>
+            </div>
+
+            <!-- Hero Graphic -->
+            <div class="relative max-w-6xl mx-auto">
+                <div class="absolute -inset-4 bg-gradient-to-r from-structura-blue/5 to-purple-500/5 rounded-3xl blur-2xl -z-10"></div>
+                <div class="bg-structura-surface rounded-2xl border border-structura-border shadow-2xl overflow-hidden relative z-0">
+                    <div class="h-12 bg-slate-50 border-b border-structura-border flex items-center px-4 justify-between">
+                        <div class="flex gap-2">
+                            <div class="w-3 h-3 rounded-full bg-slate-300"></div>
+                            <div class="w-3 h-3 rounded-full bg-slate-300"></div>
+                            <div class="w-3 h-3 rounded-full bg-slate-300"></div>
+                        </div>
+                        <div class="px-4 py-1 bg-white border border-structura-border rounded text-[10px] font-mono text-slate-400 flex items-center gap-2">
+                            <i data-lucide="lock" class="w-3 h-3"></i> structura_os_kernel.sys
+                        </div>
+                        <div class="w-16"></div>
+                    </div>
+                    
+                    <div class="p-0 grid grid-cols-12 h-[560px] bg-slate-50/30">
+                        <div class="col-span-12 md:col-span-3 border-r border-structura-border bg-white p-4 space-y-4 hidden md:block">
+                            <div class="p-4 rounded-xl border border-structura-border bg-slate-50">
+                                <div class="flex justify-between items-end mb-2">
+                                    <span class="text-xs font-mono text-slate-500">LOAD_BALANCER</span>
+                                    <span class="text-structura-blue font-bold">42%</span>
+                                </div>
+                                <div class="flex gap-1 h-8 items-end">
+                                    <div class="w-1/6 bg-structura-blue/20 h-[30%] rounded-sm"></div>
+                                    <div class="w-1/6 bg-structura-blue/40 h-[50%] rounded-sm"></div>
+                                    <div class="w-1/6 bg-structura-blue/60 h-[70%] rounded-sm"></div>
+                                    <div class="w-1/6 bg-structura-blue h-[42%] rounded-sm relative">
+                                        <div class="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full animate-ping"></div>
+                                    </div>
+                                    <div class="w-1/6 bg-structura-border h-[20%] rounded-sm"></div>
+                                    <div class="w-1/6 bg-structura-border h-[25%] rounded-sm"></div>
+                                </div>
+                            </div>
+                            <div class="p-4 rounded-xl border border-structura-border bg-slate-50">
+                                <span class="text-xs font-mono text-slate-500 block mb-2">THREAT_VECTOR</span>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full border-2 border-green-500 flex items-center justify-center">
+                                        <i data-lucide="shield-check" class="w-5 h-5 text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-bold text-structura-black">Secured</div>
+                                        <div class="text-[10px] text-slate-400">0 Intrusions</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4 rounded-xl border border-structura-border bg-slate-50">
+                                <span class="text-xs font-mono text-slate-500 block mb-2">NODE_STATUS</span>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-[11px]">
+                                        <span class="text-slate-600">US-EAST-1</span>
+                                        <span class="text-green-600 font-mono">OK</span>
+                                    </div>
+                                    <div class="flex justify-between text-[11px]">
+                                        <span class="text-slate-600">EU-WEST-2</span>
+                                        <span class="text-green-600 font-mono">OK</span>
+                                    </div>
+                                    <div class="flex justify-between text-[11px]">
+                                        <span class="text-slate-600">AP-SOUTH-1</span>
+                                        <span class="text-green-600 font-mono">OK</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-span-12 md:col-span-9 relative overflow-hidden bg-slate-50/50">
+                            <div class="absolute inset-0 bg-grid-pattern opacity-30"></div>
+                            <div class="absolute top-6 left-6 z-10">
+                                <h3 class="font-display font-bold text-lg text-structura-black">Live Topology</h3>
+                                <p class="text-xs text-slate-500">Real-time infrastructure mapping</p>
+                            </div>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <svg class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 0;">
+                                    <defs>
+                                        <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" style="stop-color:#e2e8f0;stop-opacity:1" />
+                                            <stop offset="50%" style="stop-color:#6767FF;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#e2e8f0;stop-opacity:1" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M200,280 Q400,100 600,280" stroke="url(#lineGrad)" stroke-width="2" fill="none" class="opacity-40" />
+                                    <path d="M200,280 Q400,460 600,280" stroke="#e2e8f0" stroke-width="2" fill="none" stroke-dasharray="5,5" />
+                                </svg>
+                                <div class="relative z-10 animate-float">
+                                    <div class="w-24 h-24 bg-white border-4 border-structura-light rounded-full shadow-xl flex items-center justify-center relative">
+                                        <div class="absolute inset-0 rounded-full border border-structura-blue animate-pulse-slow"></div>
+                                        <div class="text-center">
+                                            <i data-lucide="cpu" class="w-8 h-8 text-structura-black mx-auto mb-1"></i>
+                                            <div class="text-[10px] font-bold text-structura-blue">CORE</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="absolute left-[15%] top-1/2 -translate-y-1/2 animate-float" style="animation-delay: 1s;">
+                                    <div class="w-16 h-16 bg-white border border-structura-border rounded-xl shadow-lg flex flex-col items-center justify-center">
+                                        <i data-lucide="database" class="w-6 h-6 text-slate-400"></i>
+                                        <span class="text-[9px] font-mono mt-1 text-slate-500">DB_01</span>
+                                    </div>
+                                </div>
+                                <div class="absolute right-[15%] top-1/2 -translate-y-1/2 animate-float" style="animation-delay: 2s;">
+                                    <div class="w-16 h-16 bg-structura-black border border-structura-black rounded-xl shadow-lg flex flex-col items-center justify-center text-white">
+                                        <i data-lucide="globe" class="w-6 h-6"></i>
+                                        <span class="text-[9px] font-mono mt-1 opacity-70">CDN</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Logo Ticker -->
+    <div class="border-y border-structura-border bg-white py-12 overflow-hidden">
+        <p class="text-center text-xs font-bold text-slate-400 uppercase tracking-widest mb-8">Trusted by Global Engineering Teams</p>
+        <div class="flex whitespace-nowrap animate-scroll w-max">
+            <div class="flex items-center gap-24 mx-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+                <span class="text-2xl font-display font-bold text-slate-800">ORACLE</span>
+                <span class="text-2xl font-display font-bold text-slate-800">CISCO</span>
+                <span class="text-2xl font-display font-bold text-slate-800">IBM</span>
+                <span class="text-2xl font-display font-bold text-slate-800">DATADOG</span>
+                <span class="text-2xl font-display font-bold text-slate-800">SPLUNK</span>
+                <span class="text-2xl font-display font-bold text-slate-800">AWS</span>
+                <span class="text-2xl font-display font-bold text-slate-800">AZURE</span>
+            </div>
+            <div class="flex items-center gap-24 mx-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+                <span class="text-2xl font-display font-bold text-slate-800">ORACLE</span>
+                <span class="text-2xl font-display font-bold text-slate-800">CISCO</span>
+                <span class="text-2xl font-display font-bold text-slate-800">IBM</span>
+                <span class="text-2xl font-display font-bold text-slate-800">DATADOG</span>
+                <span class="text-2xl font-display font-bold text-slate-800">SPLUNK</span>
+                <span class="text-2xl font-display font-bold text-slate-800">AWS</span>
+                <span class="text-2xl font-display font-bold text-slate-800">AZURE</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Services Section -->
+    <section class="py-32 max-w-7xl mx-auto px-6">
+        <div class="mb-20 max-w-3xl">
+            <h2 class="text-sm font-bold text-structura-blue uppercase tracking-wider mb-4">Core Capabilities</h2>
+            <h3 class="text-4xl md:text-5xl font-bold font-display text-structura-black mb-6">Engineered for the Scale of Tomorrow.</h3>
+            <p class="text-slate-500 text-xl leading-relaxed">
+                We don't just fix computers. We architect resilient systems that serve as the foundation for your enterprise operations.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="col-span-1 md:col-span-2 md:row-span-2 card-enterprise p-10 rounded-3xl flex flex-col justify-between">
+                <div>
+                    <div class="w-14 h-14 bg-structura-light border border-structura-border rounded-xl flex items-center justify-center mb-8">
+                        <i data-lucide="cloud" class="w-7 h-7 text-structura-blue"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold font-display mb-4">Cloud Architecture</h4>
+                    <p class="text-slate-500 leading-relaxed text-lg">
+                        Scalable, secure cloud environments on AWS and Azure. We handle migration, optimization, and multi-cloud management strategies.
+                    </p>
+                </div>
+                <div class="mt-8">
+                    <a href="#" class="text-structura-black font-semibold flex items-center hover:text-structura-blue transition-colors">
+                        Explore Cloud Solutions <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-span-1 md:col-span-2 card-enterprise p-8 rounded-3xl flex items-center gap-6">
+                <div class="w-14 h-14 bg-structura-black text-white rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="shield" class="w-7 h-7"></i>
+                </div>
+                <div>
+                    <h4 class="text-xl font-bold font-display mb-2">Cybersecurity Fortress</h4>
+                    <p class="text-slate-500 text-sm">Enterprise-grade threat detection & Zero Trust architecture.</p>
+                </div>
+            </div>
+            <div class="col-span-1 card-enterprise p-8 rounded-3xl">
+                <div class="w-12 h-12 bg-structura-light border border-structura-border rounded-xl flex items-center justify-center mb-6">
+                    <i data-lucide="network" class="w-6 h-6 text-structura-black"></i>
+                </div>
+                <h4 class="text-lg font-bold font-display mb-2">Network Infra</h4>
+                <p class="text-slate-500 text-sm mb-4">SD-WAN, Fiber optics, and high-availability routing.</p>
+            </div>
+             <div class="col-span-1 card-enterprise p-8 rounded-3xl">
+                <div class="w-12 h-12 bg-structura-light border border-structura-border rounded-xl flex items-center justify-center mb-6">
+                    <i data-lucide="terminal" class="w-6 h-6 text-structura-black"></i>
+                </div>
+                <h4 class="text-lg font-bold font-display mb-2">DevOps Ops</h4>
+                <p class="text-slate-500 text-sm mb-4">CI/CD pipelines automating software delivery.</p>
+            </div>
+            <div class="col-span-1 md:col-span-2 card-enterprise p-8 rounded-3xl bg-structura-black text-white border-structura-black group">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-6 backdrop-blur-sm">
+                            <i data-lucide="file-check" class="w-6 h-6 text-white"></i>
+                        </div>
+                        <h4 class="text-xl font-bold font-display mb-2">Data Compliance</h4>
+                        <p class="text-slate-400 text-sm max-w-xs">GDPR, HIPAA, and SOC2 readiness audits built-in.</p>
+                    </div>
+                    <div class="hidden md:block">
+                        <i data-lucide="arrow-up-right" class="w-6 h-6 text-white opacity-50 group-hover:opacity-100 transition-opacity"></i>
+                    </div>
+                </div>
+            </div>
+             <div class="col-span-1 md:col-span-2 card-enterprise p-8 rounded-3xl flex flex-col md:flex-row items-center gap-8">
+                <div class="flex-1">
+                    <h4 class="text-xl font-bold font-display mb-2">Edge Computing</h4>
+                    <p class="text-slate-500 text-sm">Processing power distributed to the source of data generation.</p>
+                </div>
+                <div class="w-full md:w-1/3 h-16 bg-slate-100 rounded-lg relative overflow-hidden">
+                    <div class="absolute bottom-0 left-0 w-full h-full flex items-end px-2 pb-2 gap-1">
+                        <div class="w-1/5 h-[40%] bg-structura-blue/40 rounded-sm"></div>
+                        <div class="w-1/5 h-[70%] bg-structura-blue/60 rounded-sm"></div>
+                        <div class="w-1/5 h-[50%] bg-structura-blue/40 rounded-sm"></div>
+                        <div class="w-1/5 h-[90%] bg-structura-blue rounded-sm"></div>
+                        <div class="w-1/5 h-[60%] bg-structura-blue/50 rounded-sm"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW LAYOUT D: Interactive Automation Timeline -->
+    <section class="py-24 bg-white border-y border-structura-border overflow-hidden" id="methodology">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-20">
+                <span class="text-xs font-bold text-structura-black border border-structura-border px-3 py-1 rounded-full uppercase tracking-wider bg-slate-50">The Structura Method</span>
+                <h2 class="text-3xl md:text-4xl font-bold font-display mt-6">From Assessment to Optimization</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                
+                <!-- Left: Interactive List -->
+                <div class="space-y-6" id="timeline-list">
+                    <!-- Step 1 -->
+                    <div class="timeline-tab active p-6 rounded-r-xl border-l-4 border-transparent cursor-pointer hover:bg-slate-50" onclick="setStep(0)">
+                        <h4 class="text-xl font-bold font-display text-structura-black">Assess</h4>
+                        <p class="text-slate-500 text-sm leading-relaxed">We conduct a deep-dive audit of your current infrastructure, identifying bottlenecks, security gaps, and technical debt.</p>
+                        <div class="progress-bar-bg"><div class="progress-fill"></div></div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="timeline-tab p-6 rounded-r-xl border-l-4 border-transparent cursor-pointer hover:bg-slate-50" onclick="setStep(1)">
+                        <h4 class="text-xl font-bold font-display text-structura-black">Architect</h4>
+                        <p class="text-slate-500 text-sm leading-relaxed">Designing the blueprint for a resilient, scalable future state using modern cloud-native patterns.</p>
+                        <div class="progress-bar-bg"><div class="progress-fill"></div></div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="timeline-tab p-6 rounded-r-xl border-l-4 border-transparent cursor-pointer hover:bg-slate-50" onclick="setStep(2)">
+                        <h4 class="text-xl font-bold font-display text-structura-black">Deploy</h4>
+                        <p class="text-slate-500 text-sm leading-relaxed">Seamless implementation with zero-downtime migration strategies and automated CI/CD rollouts.</p>
+                        <div class="progress-bar-bg"><div class="progress-fill"></div></div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="timeline-tab p-6 rounded-r-xl border-l-4 border-transparent cursor-pointer hover:bg-slate-50" onclick="setStep(3)">
+                        <h4 class="text-xl font-bold font-display text-structura-black">Optimize</h4>
+                        <p class="text-slate-500 text-sm leading-relaxed">Continuous monitoring, AI-driven performance tuning, and automated cost governance.</p>
+                        <div class="progress-bar-bg"><div class="progress-fill"></div></div>
+                    </div>
+                </div>
+
+                <!-- Right: Changing Visual Card -->
+                <div class="relative h-[450px] bg-structura-light rounded-3xl border border-structura-border overflow-hidden shadow-2xl">
+                    <div class="absolute inset-0 bg-grid-pattern opacity-50"></div>
+                    
+                    <!-- Card 1: Assess (Audit) -->
+                    <div class="feature-card active p-10 flex flex-col justify-between h-full" id="card-0">
+                        <div class="flex justify-between items-start">
+                            <div class="p-3 bg-white rounded-xl shadow-sm border border-structura-border">
+                                <i data-lucide="clipboard-list" class="w-8 h-8 text-structura-blue"></i>
+                            </div>
+                            <div class="text-xs font-mono text-slate-400 bg-white px-2 py-1 rounded border border-structura-border">AUDIT_LOG_INIT</div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="h-2 bg-slate-200 rounded w-3/4"></div>
+                            <div class="h-2 bg-slate-200 rounded w-1/2"></div>
+                            <div class="h-2 bg-slate-200 rounded w-full"></div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl border border-structura-border shadow-lg">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-500">
+                                    <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-structura-black">Vulnerability Detected</div>
+                                    <div class="text-xs text-slate-500">Legacy SQL Injection Risk</div>
+                                </div>
+                            </div>
+                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                <div class="bg-red-500 h-full w-[85%]"></div>
+                            </div>
+                            <div class="flex justify-between mt-2 text-xs text-slate-500">
+                                <span>Risk Level</span>
+                                <span class="text-red-500 font-bold">Critical</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Architect (Blueprint) -->
+                    <div class="feature-card p-10 flex flex-col h-full" id="card-1">
+                         <div class="absolute top-0 right-0 p-10">
+                            <i data-lucide="compass" class="w-32 h-32 text-structura-blue opacity-10"></i>
+                         </div>
+                         <div class="bg-structura-black text-white p-6 rounded-xl shadow-xl w-3/4 mb-6 z-10 border border-slate-700">
+                             <div class="flex items-center gap-3 mb-4">
+                                 <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                                 <span class="font-mono text-xs text-slate-400">ARCHITECT_V2.0</span>
+                             </div>
+                             <div class="space-y-2">
+                                 <div class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-structura-blue"></i> Load Balancing</div>
+                                 <div class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-structura-blue"></i> Auto-Scaling Groups</div>
+                                 <div class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-structura-blue"></i> Multi-AZ Failover</div>
+                             </div>
+                         </div>
+                         <!-- Diagram lines -->
+                         <div class="flex-1 relative">
+                             <div class="absolute top-0 left-8 w-0.5 h-full bg-slate-300 border-l border-dashed border-slate-400"></div>
+                             <div class="absolute top-1/2 left-8 w-16 h-0.5 bg-slate-300 border-t border-dashed border-slate-400"></div>
+                             <div class="absolute top-1/2 left-24 p-4 bg-white border border-structura-border rounded-lg shadow-sm">
+                                 <i data-lucide="server" class="w-6 h-6 text-structura-black"></i>
+                             </div>
+                         </div>
+                    </div>
+
+                    <!-- Card 3: Deploy (Rocket/Terminal) -->
+                    <div class="feature-card p-10 flex flex-col justify-center h-full bg-structura-black" id="card-2">
+                        <div class="font-mono text-xs text-green-400 mb-2">> init_deployment_sequence.sh</div>
+                        <div class="font-mono text-xs text-slate-400 mb-6">... checking dependencies ... OK</div>
+                        
+                        <div class="bg-slate-900 rounded-lg p-4 border border-slate-700 mb-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-white text-sm font-bold">Build Progress</span>
+                                <span class="text-green-400 text-xs">98%</span>
+                            </div>
+                            <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden">
+                                <div class="bg-green-500 h-full w-[98%] animate-pulse"></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="bg-slate-800 p-3 rounded text-center">
+                                <i data-lucide="git-commit" class="w-5 h-5 text-purple-400 mx-auto mb-1"></i>
+                                <span class="text-[10px] text-slate-400">Commit</span>
+                            </div>
+                            <div class="bg-slate-800 p-3 rounded text-center">
+                                <i data-lucide="test-tube" class="w-5 h-5 text-yellow-400 mx-auto mb-1"></i>
+                                <span class="text-[10px] text-slate-400">Test</span>
+                            </div>
+                             <div class="bg-slate-800 p-3 rounded text-center border border-green-500/50">
+                                <i data-lucide="rocket" class="w-5 h-5 text-green-400 mx-auto mb-1"></i>
+                                <span class="text-[10px] text-white">Deploy</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Optimize (Charts) -->
+                    <div class="feature-card p-10 flex flex-col h-full" id="card-3">
+                         <div class="flex justify-between items-center mb-8">
+                             <h5 class="font-bold text-structura-black">Performance Metrics</h5>
+                             <div class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-bold">+24% Efficiency</div>
+                         </div>
+                         
+                         <!-- Chart -->
+                         <div class="flex items-end gap-2 h-32 mb-6">
+                             <div class="w-1/6 bg-structura-blue/20 h-[40%] rounded-t"></div>
+                             <div class="w-1/6 bg-structura-blue/30 h-[55%] rounded-t"></div>
+                             <div class="w-1/6 bg-structura-blue/40 h-[45%] rounded-t"></div>
+                             <div class="w-1/6 bg-structura-blue/60 h-[70%] rounded-t"></div>
+                             <div class="w-1/6 bg-structura-blue/80 h-[60%] rounded-t"></div>
+                             <div class="w-1/6 bg-structura-blue h-[90%] rounded-t relative group">
+                                 <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-structura-black text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                     Peak
+                                 </div>
+                             </div>
+                         </div>
+
+                         <div class="grid grid-cols-2 gap-4">
+                             <div class="p-4 bg-white border border-structura-border rounded-xl shadow-sm">
+                                 <div class="text-xs text-slate-500 mb-1">Latency</div>
+                                 <div class="text-xl font-bold text-structura-black">12ms <span class="text-xs text-green-500 font-normal">↓ 4ms</span></div>
+                             </div>
+                             <div class="p-4 bg-white border border-structura-border rounded-xl shadow-sm">
+                                 <div class="text-xs text-slate-500 mb-1">Cost Savings</div>
+                                 <div class="text-xl font-bold text-structura-black">$12k <span class="text-xs text-green-500 font-normal">/mo</span></div>
+                             </div>
+                         </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Integration Section -->
+    <section class="py-24 bg-structura-light overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            
+            <div>
+                <div class="inline-block px-3 py-1 bg-white border border-structura-border rounded text-xs font-bold text-slate-500 mb-6 shadow-sm">
+                    INTEGRATION ORBIT
+                </div>
+                <h2 class="text-4xl font-bold font-display text-structura-black mb-6">Connecting your people, hardware, and data.</h2>
+                <p class="text-lg text-slate-600 mb-8 leading-relaxed">
+                    Eliminate data silos. Structura acts as the central nervous system for your IT operations, syncing HR, Finance, and Engineering data streams into one cohesive truth.
+                </p>
+                
+                <ul class="space-y-6">
+                    <li class="flex items-start gap-4">
+                        <div class="w-6 h-6 mt-1 rounded-full bg-structura-blue/10 flex items-center justify-center flex-shrink-0">
+                            <div class="w-2 h-2 rounded-full bg-structura-blue"></div>
+                        </div>
+                        <div>
+                            <h5 class="font-bold text-structura-black">Real-time Asset Tracking</h5>
+                            <p class="text-sm text-slate-500 mt-1">Know exactly where every server and laptop is.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-4">
+                        <div class="w-6 h-6 mt-1 rounded-full bg-structura-blue/10 flex items-center justify-center flex-shrink-0">
+                            <div class="w-2 h-2 rounded-full bg-structura-blue"></div>
+                        </div>
+                        <div>
+                            <h5 class="font-bold text-structura-black">Automated Onboarding</h5>
+                            <p class="text-sm text-slate-500 mt-1">Provision devices and accounts in seconds, not days.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="relative h-[500px] flex items-center justify-center">
+                <div class="absolute z-20">
+                    <div class="w-28 h-28 bg-structura-black rounded-3xl shadow-2xl flex items-center justify-center border-[6px] border-white relative">
+                         <span class="text-white font-display font-bold text-xl">HUB</span>
+                         <div class="absolute -inset-4 bg-structura-blue/20 rounded-3xl -z-10 animate-pulse"></div>
+                    </div>
+                </div>
+
+                <div class="absolute w-[450px] h-[450px] border border-dashed border-slate-300 rounded-full animate-spin-slow opacity-60"></div>
+                <div class="absolute w-[300px] h-[300px] border border-slate-200 rounded-full animate-spin-reverse opacity-60"></div>
+
+                <div class="absolute w-[450px] h-[450px] animate-spin-slow pointer-events-none">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-3 rounded-xl shadow-lg border border-structura-border flex items-center gap-2">
+                        <i data-lucide="users" class="w-4 h-4 text-structura-blue"></i>
+                        <span class="text-xs font-bold text-structura-black">HRIS</span>
+                    </div>
+                    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 bg-white p-3 rounded-xl shadow-lg border border-structura-border flex items-center gap-2">
+                        <i data-lucide="hard-drive" class="w-4 h-4 text-structura-amber"></i>
+                        <span class="text-xs font-bold text-structura-black">MDM</span>
+                    </div>
+                </div>
+
+                 <div class="absolute w-[300px] h-[300px] animate-spin-reverse pointer-events-none">
+                    <div class="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 bg-white p-2 rounded-lg shadow-md border border-structura-border">
+                        <i data-lucide="lock" class="w-4 h-4 text-green-600"></i>
+                    </div>
+                    <div class="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 bg-white p-2 rounded-lg shadow-md border border-structura-border">
+                        <i data-lucide="cloud" class="w-4 h-4 text-purple-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Insights Section -->
+    <section class="py-24 max-w-7xl mx-auto px-6">
+        <div class="flex justify-between items-end mb-12">
+            <div>
+                <h2 class="text-3xl font-bold font-display text-structura-black">Engineering Insights</h2>
+                <p class="text-slate-500 mt-2">Technical strategies for the modern CTO.</p>
+            </div>
+            <a href="#" class="text-sm font-bold text-structura-black border-b border-structura-black pb-1 hover:text-structura-blue hover:border-structura-blue transition-colors">View All Articles</a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <article class="group cursor-pointer">
+                <div class="bg-white border border-structura-border rounded-xl p-1 mb-4 overflow-hidden">
+                    <div class="h-48 bg-slate-100 rounded-lg relative overflow-hidden group-hover:scale-[1.02] transition-transform">
+                        <div class="absolute inset-0 bg-grid-pattern opacity-50"></div>
+                        <div class="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-structura-blue/10 to-transparent"></div>
+                        <div class="absolute top-4 right-4 p-2 bg-white rounded-md shadow-sm">
+                            <i data-lucide="file-text" class="w-4 h-4 text-structura-black"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-2 text-xs font-bold text-structura-blue mb-2 uppercase">
+                    <span>Architecture</span> • <span>5 min read</span>
+                </div>
+                <h3 class="text-xl font-bold font-display text-structura-black mb-2 group-hover:text-structura-blue transition-colors">Migrating Legacy Monoliths to Microservices</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">A strategic roadmap for de-risking your digital transformation without pausing business.</p>
+            </article>
+
+            <article class="group cursor-pointer">
+                <div class="bg-white border border-structura-border rounded-xl p-1 mb-4 overflow-hidden">
+                    <div class="h-48 bg-slate-100 rounded-lg relative overflow-hidden group-hover:scale-[1.02] transition-transform">
+                        <div class="absolute inset-0 bg-grid-pattern opacity-50"></div>
+                        <div class="absolute bottom-0 right-0 w-24 h-24 bg-structura-amber/10 rounded-full blur-xl"></div>
+                        <div class="absolute top-4 right-4 p-2 bg-white rounded-md shadow-sm">
+                            <i data-lucide="shield" class="w-4 h-4 text-structura-black"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-2 text-xs font-bold text-structura-blue mb-2 uppercase">
+                    <span>Security</span> • <span>7 min read</span>
+                </div>
+                <h3 class="text-xl font-bold font-display text-structura-black mb-2 group-hover:text-structura-blue transition-colors">Zero Trust: Beyond the Buzzword</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">Implementing actual identity-aware proxies and context-based access controls.</p>
+            </article>
+
+            <article class="group cursor-pointer">
+                <div class="bg-white border border-structura-border rounded-xl p-1 mb-4 overflow-hidden">
+                    <div class="h-48 bg-slate-100 rounded-lg relative overflow-hidden group-hover:scale-[1.02] transition-transform">
+                         <div class="absolute inset-0 bg-grid-pattern opacity-50"></div>
+                         <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-200 via-transparent to-transparent"></div>
+                        <div class="absolute top-4 right-4 p-2 bg-white rounded-md shadow-sm">
+                            <i data-lucide="cpu" class="w-4 h-4 text-structura-black"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-2 text-xs font-bold text-structura-blue mb-2 uppercase">
+                    <span>Infrastructure</span> • <span>4 min read</span>
+                </div>
+                <h3 class="text-xl font-bold font-display text-structura-black mb-2 group-hover:text-structura-blue transition-colors">The Cost of Cloud Wastage</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">How to identify idle resources and implement automated cost-control governance.</p>
+            </article>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-structura-border pt-20 pb-12">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-5 gap-10 mb-16">
+            <div class="col-span-2">
+                <a href="#" class="flex items-center gap-2 mb-6">
+                    <div class="w-6 h-6 bg-structura-black text-white flex items-center justify-center rounded-md">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                             <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-lg font-display font-bold">Structura<span class="text-structura-blue">IT</span></span>
+                </a>
+                <p class="text-slate-500 text-sm max-w-xs leading-relaxed">
+                    Building the digital foundations for tomorrow's enterprises. <br> Robust. Secure. Scalable.
+                </p>
+                <div class="mt-8 pt-8 border-t border-slate-100">
+                    <h5 class="text-xs font-bold text-slate-400 mb-4 uppercase">Our Evolution</h5>
+                    <div class="flex gap-4 text-xs font-mono text-slate-500">
+                        <div>
+                            <span class="block font-bold text-structura-black">2015</span>
+                            Founded
+                        </div>
+                        <div class="w-px bg-slate-200"></div>
+                        <div>
+                            <span class="block font-bold text-structura-black">2019</span>
+                            Series B
+                        </div>
+                        <div class="w-px bg-slate-200"></div>
+                        <div>
+                            <span class="block font-bold text-structura-black">2024</span>
+                            Global
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <h4 class="font-bold text-structura-black mb-6">Capabilities</h4>
+                <ul class="space-y-4 text-sm text-slate-500">
+                    <li><a href="#" class="hover:text-structura-blue transition-colors">Cloud Infrastructure</a></li>
+                    <li><a href="#" class="hover:text-structura-blue transition-colors">Cybersecurity</a></li>
+                    <li><a href="#" class="hover:text-structura-blue transition-colors">DevOps Automation</a></li>
+                    <li><a href="#" class="hover:text-structura-blue transition-colors">Data Governance</a></li>
+                </ul>
+            </div>
+            
+            <div>
+                <h4 class="font-bold text-structura-black mb-6">Company</h4>
+                <ul class="space-y-4 text-sm text-slate-500">
+                    <li><a href="#" class="hover:text-structura-blue transition-colors">About Us</a></li>
+                    <li><a href="#" class="hover:text-structura-blue transition-colors">Case Studies</a></li>
+                    <li><a href="#" class="hover:text-structura-blue transition-colors">Careers</a></li>
+                    <li><a href="#" class="hover:text-structura-blue transition-colors">Partners</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="font-bold text-structura-black mb-6">Legal</h4>
+                <ul class="space-y-4 text-sm text-slate-500">
+                    <li><a href="#" class="hover:text-structura-blue transition-colors">Privacy Policy</a></li>
+                    <li><a href="#" class="hover:text-structura-blue transition-colors">Terms of Service</a></li>
+                    <li><a href="#" class="hover:text-structura-blue transition-colors">SLA Agreement</a></li>
+                    <li><a href="#" class="hover:text-structura-blue transition-colors">Security Trust</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="max-w-7xl mx-auto px-6 pt-8 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center text-sm text-slate-400">
+            <p>&copy; 2024 Structura IT Services. All rights reserved.</p>
+            <div class="flex gap-6 mt-4 md:mt-0">
+                <a href="#" class="hover:text-structura-black transition-colors"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+                <a href="#" class="hover:text-structura-black transition-colors"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
+                <a href="#" class="hover:text-structura-black transition-colors"><i data-lucide="github" class="w-4 h-4"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        // --- TIMELINE INTERACTIVITY SCRIPT ---
+        let currentStep = 0;
+        const totalSteps = 4;
+        let autoPlayInterval;
+
+        function setStep(stepIndex) {
+            // Update Tab Active States
+            const tabs = document.querySelectorAll('.timeline-tab');
+            tabs.forEach((tab, index) => {
+                if(index === stepIndex) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+
+            // Update Card Active States
+            const cards = document.querySelectorAll('.feature-card');
+            cards.forEach((card, index) => {
+                if(index === stepIndex) {
+                    card.classList.add('active');
+                } else {
+                    card.classList.remove('active');
+                }
+            });
+
+            currentStep = stepIndex;
+            
+            // Reset Interval on Manual Click
+            clearInterval(autoPlayInterval);
+            autoPlayInterval = setInterval(nextStep, 5000); // Restart auto-play
+        }
+
+        function nextStep() {
+            let next = (currentStep + 1) % totalSteps;
+            setStep(next);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Start Auto-Play
+            autoPlayInterval = setInterval(nextStep, 5000);
+        });
+
+    </script>
+</body>
+</html>

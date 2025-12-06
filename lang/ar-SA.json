@@ -1,0 +1,43 @@
+{
+  "Hero": {
+    "systemStatus": "النظام يعمل: الإصدار 4.2.0 نشط",
+    "title": "هندسة مستقبلك الرقمي",
+    "subtitle": "النزاهة الهيكلية",
+    "description": "العمود الفقري الكامل لتكنولوجيا المعلومات للمؤسسات الحديثة. ندمج البنية التحتية المرنة مع أحدث البرامج للبناء والتوسع والاستدامة.",
+    "initializeBtn": "تهيئة البنية",
+    "viewTechStackBtn": "عرض التقنيات",
+    "liveTopology": "طوبولوجيا حية",
+    "realTimeMapping": "رسم خرائط البنية التحتية في الوقت الحقيقي",
+    "loadBalancer": "موازن_الحمل",
+    "threatVector": "ناقل_التهديد",
+    "secured": "مؤمن",
+    "intrusions": "0 اختراقات",
+    "nodeStatus": "حالة_العقدة",
+    "core": "النواة",
+    "cdn": "CDN"
+  },
+  "Navbar": {
+    "services": "الخدمات",
+    "solutions": "الحلول",
+    "enterprise": "المؤسسة",
+    "insights": "رؤى",
+    "getConsultation": "احصل على استشارة",
+    "infrastructure": "البنية التحتية",
+    "security": "الأمان",
+    "cloudArchitecture": "هندسة السحابة",
+    "hybridSystems": "الأنظمة الهجينة",
+    "dataCenters": "مراكز البيانات",
+    "cyberDefense": "الدفاع السيبراني",
+    "complianceAudit": "تدقيق الامتثال",
+    "zeroTrust": "انعدام الثقة"
+  },
+  "blog.post-1.title": "The Future of Cloud Infrastructure",
+  "blog.post-1.summary": "Exploring how hybrid cloud systems are reshaping enterprise scalability.",
+  "blog.post-1.body": "# The Future is Hybrid\r\n\r\nCloud computing has evolved rapidly over the last decade. Enterprises are no longer choosing between public and private clouds; they are embracing **hybrid architectures**.\r\n\r\n## Why Hybrid?\r\n\r\n1.  **Security**: Keep sensitive data on-premise.\r\n2.  **Scalability**: Burst into the public cloud when traffic spikes.\r\n3.  **Cost**: Optimize workloads based on price/performance.\r\n\r\nAt Structura IT, we believe the future lies in seamless orchestration between these environments.",
+  "news.news-1.title": "Structura IT Expands to Asia",
+  "news.news-1.body": "We are thrilled to announce our new regional headquarters in **Singapore**. This expansion will allow us to better serve our clients in the APAC region, providing 24/7 support and localized infrastructure solutions.\r\n\r\n\"This is a monumental step for our global strategy,\" says the CEO.",
+  "blog.title": "{t('title')}",
+  "blog.subtitle": "{t('subtitle')}",
+  "news.title": "{t('title')}",
+  "news.subtitle": "{t('subtitle')}"
+}

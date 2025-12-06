@@ -1,0 +1,43 @@
+{
+  "Hero": {
+    "systemStatus": "System Operational: V 4.2.0 Active",
+    "title": "Engineer Your Digital",
+    "subtitle": "Structural Integrity",
+    "description": "The complete IT backbone for modern enterprises. We fuse resilient infrastructure with cutting-edge software to build, scale, and sustain.",
+    "initializeBtn": "Initialize Architecture",
+    "viewTechStackBtn": "View Tech Stack",
+    "liveTopology": "Live Topology",
+    "realTimeMapping": "Real-time infrastructure mapping",
+    "loadBalancer": "LOAD_BALANCER",
+    "threatVector": "THREAT_VECTOR",
+    "secured": "Secured",
+    "intrusions": "0 Intrusions",
+    "nodeStatus": "NODE_STATUS",
+    "core": "CORE",
+    "cdn": "CDN"
+  },
+  "Navbar": {
+    "services": "Services",
+    "solutions": "Solutions",
+    "enterprise": "Enterprise",
+    "insights": "Insights",
+    "getConsultation": "Get Consultation",
+    "infrastructure": "Infrastructure",
+    "security": "Security",
+    "cloudArchitecture": "Cloud Architecture",
+    "hybridSystems": "Hybrid Systems",
+    "dataCenters": "Data Centers",
+    "cyberDefense": "Cyber Defense",
+    "complianceAudit": "Compliance Audit",
+    "zeroTrust": "Zero Trust"
+  },
+  "blog.post-1.title": "The Future of Cloud Infrastructure",
+  "blog.post-1.summary": "Exploring how hybrid cloud systems are reshaping enterprise scalability.",
+  "blog.post-1.body": "# The Future is Hybrid\r\n\r\nCloud computing has evolved rapidly over the last decade. Enterprises are no longer choosing between public and private clouds; they are embracing **hybrid architectures**.\r\n\r\n## Why Hybrid?\r\n\r\n1.  **Security**: Keep sensitive data on-premise.\r\n2.  **Scalability**: Burst into the public cloud when traffic spikes.\r\n3.  **Cost**: Optimize workloads based on price/performance.\r\n\r\nAt Structura IT, we believe the future lies in seamless orchestration between these environments.",
+  "news.news-1.title": "Structura IT Expands to Asia",
+  "news.news-1.body": "We are thrilled to announce our new regional headquarters in **Singapore**. This expansion will allow us to better serve our clients in the APAC region, providing 24/7 support and localized infrastructure solutions.\r\n\r\n\"This is a monumental step for our global strategy,\" says the CEO.",
+  "blog.title": "Engineering Insights",
+  "blog.subtitle": "Deep dives into infrastructure, security, and scalability.",
+  "news.title": "Company News",
+  "news.subtitle": "Latest updates from Structura IT."
+}

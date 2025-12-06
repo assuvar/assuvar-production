@@ -1,0 +1,34 @@
+{
+  "Hero": {
+    "systemStatus": "Système Opérationnel : V 4.2.0 Actif",
+    "title": "Ingénierie de votre numérique",
+    "subtitle": "Intégrité Structurelle",
+    "description": "L'épine dorsale informatique complète pour les entreprises modernes. Nous fusionnons une infrastructure résiliente avec des logiciels de pointe pour construire, évoluer et soutenir.",
+    "initializeBtn": "Initialiser l'architecture",
+    "viewTechStackBtn": "Voir la pile technique",
+    "liveTopology": "Topologie en direct",
+    "realTimeMapping": "Cartographie de l'infrastructure en temps réel",
+    "loadBalancer": "ÉQUILIBREUR_CHARGE",
+    "threatVector": "VECTEUR_MENACE",
+    "secured": "Sécurisé",
+    "intrusions": "0 Intrusions",
+    "nodeStatus": "ÉTAT_NOEUD",
+    "core": "COEUR",
+    "cdn": "CDN"
+  },
+  "Navbar": {
+    "services": "Services",
+    "solutions": "Solutions",
+    "enterprise": "Entreprise",
+    "insights": "Aperçus",
+    "getConsultation": "Obtenir une consultation",
+    "infrastructure": "Infrastructure",
+    "security": "Sécurité",
+    "cloudArchitecture": "Architecture Cloud",
+    "hybridSystems": "Systèmes Hybrides",
+    "dataCenters": "Centres de Données",
+    "cyberDefense": "Cyberdéfense",
+    "complianceAudit": "Audit de Conformité",
+    "zeroTrust": "Zéro Confiance"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "Hero": {
+    "systemStatus": "Sistema Operativo: V 4.2.0 Activo",
+    "title": "Ingeniería Digital",
+    "subtitle": "Integridad Estructural",
+    "description": "La columna vertebral de TI completa para empresas modernas. Fusionamos infraestructura resistente con software de vanguardia para construir, escalar y sostener.",
+    "initializeBtn": "Inicializar Arquitectura",
+    "viewTechStackBtn": "Ver Tech Stack",
+    "liveTopology": "Topología en Vivo",
+    "realTimeMapping": "Mapeo de infraestructura en tiempo real",
+    "loadBalancer": "BALANCEADOR_CARGA",
+    "threatVector": "VECTOR_AMENAZA",
+    "secured": "Seguro",
+    "intrusions": "0 Intrusiones",
+    "nodeStatus": "ESTADO_NODO",
+    "core": "NÚCLEO",
+    "cdn": "CDN"
+  },
+  "Navbar": {
+    "services": "Servicios",
+    "solutions": "Soluciones",
+    "enterprise": "Empresa",
+    "insights": "Perspectivas",
+    "getConsultation": "Obtener Consulta",
+    "infrastructure": "Infraestructura",
+    "security": "Seguridad",
+    "cloudArchitecture": "Arquitectura en la Nube",
+    "hybridSystems": "Sistemas Híbridos",
+    "dataCenters": "Centros de Datos",
+    "cyberDefense": "Ciberdefensa",
+    "complianceAudit": "Auditoría de Cumplimiento",
+    "zeroTrust": "Confianza Cero"
+  }
+}

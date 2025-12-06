@@ -1,0 +1,34 @@
+{
+  "Hero": {
+    "systemStatus": "النظام يعمل: الإصدار 4.2.0 نشط",
+    "title": "هندسة مستقبلك الرقمي",
+    "subtitle": "النزاهة الهيكلية",
+    "description": "العمود الفقري الكامل لتكنولوجيا المعلومات للمؤسسات الحديثة. ندمج البنية التحتية المرنة مع أحدث البرامج للبناء والتوسع والاستدامة.",
+    "initializeBtn": "تهيئة البنية",
+    "viewTechStackBtn": "عرض التقنيات",
+    "liveTopology": "طوبولوجيا حية",
+    "realTimeMapping": "رسم خرائط البنية التحتية في الوقت الحقيقي",
+    "loadBalancer": "موازن_الحمل",
+    "threatVector": "ناقل_التهديد",
+    "secured": "مؤمن",
+    "intrusions": "0 اختراقات",
+    "nodeStatus": "حالة_العقدة",
+    "core": "النواة",
+    "cdn": "CDN"
+  },
+  "Navbar": {
+    "services": "الخدمات",
+    "solutions": "الحلول",
+    "enterprise": "المؤسسة",
+    "insights": "رؤى",
+    "getConsultation": "احصل على استشارة",
+    "infrastructure": "البنية التحتية",
+    "security": "الأمان",
+    "cloudArchitecture": "هندسة السحابة",
+    "hybridSystems": "الأنظمة الهجينة",
+    "dataCenters": "مراكز البيانات",
+    "cyberDefense": "الدفاع السيبراني",
+    "complianceAudit": "تدقيق الامتثال",
+    "zeroTrust": "انعدام الثقة"
+  }
+}
