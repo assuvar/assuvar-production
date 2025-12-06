@@ -3,10 +3,11 @@
 import React, { useState } from 'react';
 import { useRouter } from '@/src/i18n/navigation';
 
-interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
+interface FormProps extends Omit<React.FormHTMLAttributes<HTMLFormElement>, 'children'> {
     name: string;
     successRoute?: string;
     errorRoute?: string;
+    children?: React.ReactNode | ((props: { isLoading: boolean }) => React.ReactNode);
 }
 
 export function Form({ name, successRoute = '/success', errorRoute = '/error', children, className, ...props }: FormProps) {

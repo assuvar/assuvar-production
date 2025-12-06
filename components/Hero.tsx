@@ -1,3 +1,5 @@
+'use client';
+
 import { ArrowRight, Lock, ShieldCheck, Cpu, Database, Globe } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
