@@ -3,17 +3,18 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 214, 219, 220;
+    --background-end-rgb: 255, 255, 255;
+    --brand-gradient: linear-gradient(135deg, #11131F 0%, #6767FD 100%);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+    :root {
+        --foreground-rgb: 255, 255, 255;
+        --background-start-rgb: 0, 0, 0;
+        --background-end-rgb: 0, 0, 0;
+    }
 }
 
 body {
@@ -23,7 +24,11 @@ body {
     overflow-x: hidden;
 }
 
-h1, h2, h3, h4, .font-display {
+h1,
+h2,
+h3,
+h4,
+.font-display {
     font-family: var(--font-space-grotesk), sans-serif;
 }
 
@@ -51,6 +56,7 @@ h1, h2, h3, h4, .font-display {
     position: relative;
     z-index: 1;
 }
+
 .card-enterprise::after {
     content: '';
     position: absolute;
@@ -61,10 +67,12 @@ h1, h2, h3, h4, .font-display {
     transition: opacity 0.3s ease;
     z-index: -1;
 }
+
 .card-enterprise:hover {
     transform: translateY(-4px);
     border-color: #6767FF;
 }
+
 .card-enterprise:hover::after {
     opacity: 1;
     box-shadow: 0 20px 25px -5px rgba(103, 103, 255, 0.1), 0 8px 10px -6px rgba(103, 103, 255, 0.1);
@@ -73,18 +81,23 @@ h1, h2, h3, h4, .font-display {
 /* --- BUTTON ANIMATIONS --- */
 
 @keyframes stripe-flow {
-    0% { background-position: 0 0; }
-    100% { background-position: 56px 0; }
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 56px 0;
+    }
 }
 
 /* Fusion Button */
 .btn-fusion {
-    background: #11131E;
+    background: var(--brand-gradient);
     color: white;
     position: relative;
     overflow: hidden;
     z-index: 1;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
     border: 1px solid transparent;
 }
 
@@ -95,13 +108,11 @@ h1, h2, h3, h4, .font-display {
     left: 0;
     width: 200%;
     height: 100%;
-    background: repeating-linear-gradient(
-        -45deg,
-        #6767FF,
-        #6767FF 20px,
-        #5858E6 20px,
-        #5858E6 40px
-    );
+    background: repeating-linear-gradient(-45deg,
+            #6767FF,
+            #6767FF 20px,
+            #5858E6 20px,
+            #5858E6 40px);
     z-index: -1;
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -110,7 +121,7 @@ h1, h2, h3, h4, .font-display {
 .btn-fusion:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px -6px rgba(103, 103, 255, 0.4);
-    border-color: #6767FF;
+    filter: brightness(1.12);
 }
 
 .btn-fusion:hover::before {
@@ -136,13 +147,11 @@ h1, h2, h3, h4, .font-display {
     left: 0;
     width: 200%;
     height: 100%;
-    background: repeating-linear-gradient(
-        -45deg,
-        #ffffff,
-        #ffffff 20px,
-        #f1f5f9 20px,
-        #f1f5f9 40px
-    );
+    background: repeating-linear-gradient(-45deg,
+            #ffffff,
+            #ffffff 20px,
+            #f1f5f9 20px,
+            #f1f5f9 40px);
     z-index: -1;
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -152,7 +161,7 @@ h1, h2, h3, h4, .font-display {
     border-color: #cbd5e1;
     color: #11131E;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .btn-secondary:hover::before {
@@ -162,9 +171,10 @@ h1, h2, h3, h4, .font-display {
 
 /* Gradient Text */
 .text-gradient {
-    background: linear-gradient(135deg, #11131E 0%, #6767FF 50%, #818cf8 100%);
+    background: var(--brand-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 /* Mega Menu */
@@ -174,26 +184,36 @@ h1, h2, h3, h4, .font-display {
     transform: translateY(0);
 }
 
+/* --- SECTION DIVIDERS --- */
+.divider-gradient {
+    height: 1px;
+    background: linear-gradient(90deg, #11131F, #6767FD);
+}
+
 /* --- TIMELINE COMPONENT STYLES --- */
 .timeline-tab {
     transition: all 0.3s ease;
 }
+
 .timeline-tab.active {
     background-color: white;
-    border-left-color: #6767FF;
+    border-left-color: #6767FD;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
+
 .timeline-tab p {
     max-height: 0;
     opacity: 0;
     overflow: hidden;
     transition: all 0.3s ease;
 }
+
 .timeline-tab.active p {
     max-height: 100px;
     opacity: 1;
     margin-top: 0.5rem;
 }
+
 .progress-bar-bg {
     width: 100%;
     height: 2px;
@@ -203,21 +223,31 @@ h1, h2, h3, h4, .font-display {
     overflow: hidden;
     display: none;
 }
+
 .timeline-tab.active .progress-bar-bg {
     display: block;
 }
+
 .progress-fill {
     height: 100%;
-    background-color: #6767FF;
+    background: var(--brand-gradient);
     width: 0%;
 }
+
 .timeline-tab.active .progress-fill {
     animation: fillProgress 5s linear forwards;
 }
+
 @keyframes fillProgress {
-    from { width: 0%; }
-    to { width: 100%; }
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: 100%;
+    }
 }
+
 .feature-card {
     opacity: 0;
     transform: translateY(10px);
@@ -226,6 +256,7 @@ h1, h2, h3, h4, .font-display {
     inset: 0;
     pointer-events: none;
 }
+
 .feature-card.active {
     opacity: 1;
     transform: translateY(0);

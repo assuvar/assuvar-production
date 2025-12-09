@@ -2,12 +2,14 @@
 
 import { ArrowRight, Lock, ShieldCheck, Cpu, Database, Globe } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import AmbientWave from "@/components/AmbientWave";
 
 export default function Hero() {
     const t = useTranslations('Hero');
 
     return (
         <main className="pt-32 pb-24 relative overflow-hidden">
+            <AmbientWave className="opacity-60" />
             <div className="absolute inset-0 bg-grid-pattern wire-bg -z-20 opacity-60 pointer-events-none"></div>
             <div className="absolute inset-0 bg-blueprint-glow -z-10 pointer-events-none"></div>
 
@@ -115,7 +117,7 @@ export default function Hero() {
                                         <defs>
                                             <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                                                 <stop offset="0%" style={{ stopColor: '#e2e8f0', stopOpacity: 1 }} />
-                                                <stop offset="50%" style={{ stopColor: '#6767FF', stopOpacity: 1 }} />
+                                                <stop offset="50%" style={{ stopColor: '#6767FD', stopOpacity: 1 }} />
                                                 <stop offset="100%" style={{ stopColor: '#e2e8f0', stopOpacity: 1 }} />
                                             </linearGradient>
                                         </defs>

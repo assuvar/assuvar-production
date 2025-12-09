@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
+import SmoothScrollProvider from '@/components/SmoothScrollProvider';
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import "../globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
@@ -46,7 +49,11 @@ export default async function RootLayout({
     <html lang={locale} dir={isRtl ? 'rtl' : 'ltr'}>
       <body className={`${inter.variable} ${spaceGrotesk.variable} antialiased selection:bg-structura-blue selection:text-white`}>
         <NextIntlClientProvider messages={messages}>
-          {children}
+          <SmoothScrollProvider>
+            <Navbar />
+            {children}
+            <Footer />
+          </SmoothScrollProvider>
         </NextIntlClientProvider>
       </body>
     </html>
