@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Handshake, Shield, Compass, Clock, CheckCircle2, Infinity, Users, HardDrive, Lock, Cloud, Zap, Layers, Code2 } from 'lucide-react';
+import { Handshake, Shield, Compass, Clock, CheckCircle2, Infinity as InfinityIcon, Users, HardDrive, Lock, Cloud, Zap, Layers, Code2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Methodology() {
@@ -51,7 +51,7 @@ export default function Methodology() {
         {
             title: 'Continuity',
             description: 'We don’t stop at delivery. We support, maintain, and optimize your systems continuously to ensure lasting value.',
-            icons: [Infinity]
+            icons: [InfinityIcon]
         }
     ];
 
@@ -160,7 +160,7 @@ export default function Methodology() {
                     { label: "On-Time Delivery", value: "98%", Icon: Clock },
                     { label: "Project Satisfaction", value: "4.9", sub: "/5", Icon: CheckCircle2 },
                     { label: "Support Response", value: "<1 hour", Icon: Users },
-                    { label: "Repeat Clients", value: "72%", Icon: Infinity }
+                    { label: "Repeat Clients", value: "72%", Icon: InfinityIcon }
                 ].map((metric, idx) => (
                     <motion.div
                         key={idx}
@@ -188,7 +188,7 @@ export default function Methodology() {
             <div className="flex justify-between items-center mb-8">
                 <h3 className="text-2xl font-bold font-display text-structura-black">Continuous Evolution</h3>
                 <div className="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-xs font-bold flex items-center gap-1 border border-orange-100">
-                    <Infinity className="w-3 h-3" />
+                    <InfinityIcon className="w-3 h-3" />
                     Infinite
                 </div>
             </div>
