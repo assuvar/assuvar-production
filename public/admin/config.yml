@@ -4,6 +4,9 @@ backend:
 
 local_backend: true
 
+site_url: "https://assuvar.com"
+display_url: "https://assuvar.com"
+
 media_folder: "public/images/uploads"
 public_folder: "/images/uploads"
 
