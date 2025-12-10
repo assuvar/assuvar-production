@@ -7,6 +7,7 @@
     --background-start-rgb: 214, 219, 220;
     --background-end-rgb: 255, 255, 255;
     --brand-gradient: linear-gradient(135deg, #11131F 0%, #6767FD 100%);
+    --accent-gradient: linear-gradient(60deg, #11131F, #6767FD);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -170,11 +171,12 @@ h4,
 }
 
 /* Gradient Text */
+/* Gradient Text - Disabled/Neutralized */
 .text-gradient {
-    background: var(--brand-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #11131E;
+    background: none;
+    -webkit-text-fill-color: initial;
+    background-clip: border-box;
 }
 
 /* Mega Menu */

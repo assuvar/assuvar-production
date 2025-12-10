@@ -44,35 +44,21 @@ const services = [
 
 export default function ServicesTimeline() {
     const [activeindex, setActiveIndex] = useState(0);
-    const [progress, setProgress] = useState(0);
 
     // Auto-rotation logic
     useEffect(() => {
-        const intervalDuration = 20000; // 20 seconds per cycle
-        const updateFreq = 100;
+        const intervalDuration = 7000; // 7 seconds per cycle
 
         const timer = setInterval(() => {
             setActiveIndex((prev) => (prev + 1) % services.length);
-            setProgress(0);
         }, intervalDuration);
 
-        const progressTimer = setInterval(() => {
-            setProgress((prev) => {
-                if (prev >= 100) return 0;
-                return prev + (100 / (intervalDuration / updateFreq));
-            });
-        }, updateFreq);
-
-        return () => {
-            clearInterval(timer);
-            clearInterval(progressTimer);
-        };
+        return () => clearInterval(timer);
     }, [activeindex]); // dependencies reset timer on index change
 
     // Manual click handler
     const handleManualClick = (index: number) => {
         setActiveIndex(index);
-        setProgress(0); // Reset progress on manual interaction
     };
 
     const activeService = services[activeindex];
@@ -84,58 +70,56 @@ export default function ServicesTimeline() {
 
                     {/* LEFT SIDE: Auto-changing content */}
                     <div className="lg:col-span-7 relative min-h-[400px] flex items-center">
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={activeindex}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -20 }}
-                                transition={{ duration: 0.6, ease: "easeInOut" }}
-                                className="w-full"
-                            >
-                                <div className="mb-8">
-                                    {/* Large SVG Illustration Placeholder - Using Lucide for now, styled as requested */}
-                                    <div className="w-[140px] h-[140px] rounded-3xl bg-gradient-to-br from-white to-slate-100 border border-structura-border shadow-2xl flex items-center justify-center mb-8 relative group">
-                                        <div className="absolute inset-0 bg-gradient-to-tr from-structura-blue/5 to-purple-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                        <activeService.icon
-                                            className="w-16 h-16 text-transparent stroke-[1.5]"
-                                            style={{
-                                                stroke: "url(#gradient-stroke)",
-                                                filter: "drop-shadow(0px 4px 6px rgba(0,0,0,0.1))"
-                                            }}
-                                        />
-                                        {/* SVG Gradient Definition */}
-                                        <svg width="0" height="0" className="absolute">
-                                            <linearGradient id="gradient-stroke" x1="0%" y1="0%" x2="100%" y2="100%">
-                                                <stop offset="0%" stopColor="#11131F" />
-                                                <stop offset="30%" stopColor="#11131F" />
-                                                <stop offset="100%" stopColor="#6767FD" />
-                                            </linearGradient>
-                                        </svg>
-                                    </div>
-
-                                    <h3 className="text-sm font-bold text-structura-blue uppercase tracking-widest mb-4">
-                                        {activeService.title}
-                                    </h3>
-                                    <h2 className="text-3xl md:text-5xl font-bold font-display text-structura-black mb-6 leading-tight">
-                                        {activeService.headline}
-                                    </h2>
-                                    <p className="text-xl text-slate-500 leading-relaxed max-w-xl mb-8">
-                                        {activeService.description}
-                                    </p>
-
-                                    {/* Horizontal Timeline Indicator */}
-                                    <div className="w-full max-w-xl h-1 bg-structura-border rounded-full overflow-hidden">
-                                        <motion.div
-                                            className="h-full bg-brand-gradient"
-                                            initial={{ width: 0 }}
-                                            animate={{ width: `${progress}%` }}
-                                            transition={{ ease: "linear", duration: 0.1 }} // Smooth updates
-                                        />
-                                    </div>
+                        <motion.div
+                            key={activeindex}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.5, ease: "easeInOut" }}
+                            className="w-full"
+                        >
+                            <div className="mb-8">
+                                {/* Large SVG Illustration Placeholder - Using Lucide for now, styled as requested */}
+                                <div className="w-[140px] h-[140px] rounded-3xl bg-gradient-to-br from-white to-slate-100 border border-structura-border shadow-2xl flex items-center justify-center mb-8 relative group">
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-structura-blue/5 to-purple-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                    <activeService.icon
+                                        className="w-16 h-16 text-transparent stroke-[1.5]"
+                                        style={{
+                                            stroke: "url(#gradient-stroke)",
+                                            filter: "drop-shadow(0px 4px 6px rgba(0,0,0,0.1))"
+                                        }}
+                                    />
+                                    {/* SVG Gradient Definition */}
+                                    <svg width="0" height="0" className="absolute">
+                                        <linearGradient id="gradient-stroke" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#11131F" />
+                                            <stop offset="30%" stopColor="#11131F" />
+                                            <stop offset="100%" stopColor="#6767FD" />
+                                        </linearGradient>
+                                    </svg>
                                 </div>
-                            </motion.div>
-                        </AnimatePresence>
+
+                                <h3 className="text-sm font-bold text-structura-blue uppercase tracking-widest mb-4">
+                                    {activeService.title}
+                                </h3>
+                                <h2 className="text-3xl md:text-5xl font-bold font-display text-structura-black mb-6 leading-tight">
+                                    {activeService.headline}
+                                </h2>
+                                <p className="text-xl text-slate-500 leading-relaxed max-w-xl mb-8">
+                                    {activeService.description}
+                                </p>
+
+                                {/* Horizontal Timeline Indicator */}
+                                <div className="w-full max-w-xl h-1 bg-structura-border rounded-full overflow-hidden">
+                                    <motion.div
+                                        key={activeindex}
+                                        className="h-full bg-brand-gradient"
+                                        initial={{ width: 0 }}
+                                        animate={{ width: "100%" }}
+                                        transition={{ ease: "linear", duration: 7 }} // Smooth updates matched to interval
+                                    />
+                                </div>
+                            </div>
+                        </motion.div>
                     </div>
 
                     {/* RIGHT SIDE: Fixed Menu */}

@@ -6,6 +6,7 @@ import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { ChevronDown, X, Menu, ArrowRight, Instagram, Linkedin, Facebook } from 'lucide-react';
 import { Link } from '@/src/i18n/navigation';
 import { servicesData } from './ServicesData';
+import { productsData } from './ProductsData';
 
 export default function MobileFullScreenMenu() {
     const [isOpen, setIsOpen] = useState(false);
@@ -129,8 +130,48 @@ export default function MobileFullScreenMenu() {
                                         </div>
                                     </div>
 
+                                    {/* Products (Accordion Wrapper) */}
+                                    <div>
+                                        <button
+                                            onClick={() => toggleCategory('products')}
+                                            className="w-full flex justify-between items-center py-2 text-2xl font-display font-bold text-structura-black mb-2 hover:text-[#6A0DAD] transition-colors"
+                                        >
+                                            Products
+                                            <ChevronDown
+                                                className={`w-5 h-5 transition-transform duration-300 ${expandedCategory === 'products' ? 'rotate-180 text-[#6A0DAD]' : 'text-slate-400'}`}
+                                            />
+                                        </button>
+
+                                        <AnimatePresence>
+                                            {expandedCategory === 'products' && (
+                                                <motion.div
+                                                    initial={{ height: 0, opacity: 0 }}
+                                                    animate={{ height: 'auto', opacity: 1 }}
+                                                    exit={{ height: 0, opacity: 0 }}
+                                                    className="overflow-hidden"
+                                                >
+                                                    <div className="pl-4 py-2 space-y-3 border-l-2 border-slate-100 ml-1">
+                                                        {productsData.map((product) => (
+                                                            <Link
+                                                                key={product.slug}
+                                                                href={`/products/${product.slug}`}
+                                                                onClick={() => setIsOpen(false)}
+                                                                className="flex items-center justify-between text-lg font-medium text-slate-500 hover:text-[#6A0DAD] hover:translate-x-1 transition-all"
+                                                            >
+                                                                {product.label}
+                                                                {product.status === 'coming-soon' && (
+                                                                    <span className="text-[10px] bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Soon</span>
+                                                                )}
+                                                            </Link>
+                                                        ))}
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+
                                     <Link href="#" className="block text-2xl font-display font-bold text-slate-400 hover:text-structura-black transition-colors">Solutions</Link>
-                                    <Link href="#" className="block text-2xl font-display font-bold text-slate-400 hover:text-structura-black transition-colors">Enterprise</Link>
+
                                     <Link href="#" className="block text-2xl font-display font-bold text-slate-400 hover:text-structura-black transition-colors">Insights</Link>
                                     <Link href="#" className="block text-2xl font-display font-bold text-slate-400 hover:text-structura-black transition-colors">About Us</Link>
                                 </nav>

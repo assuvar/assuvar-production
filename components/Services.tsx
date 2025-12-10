@@ -3,9 +3,9 @@ import { Cloud, ArrowRight, Shield, Network, Terminal, FileCheck, ArrowUpRight }
 
 export default function Services() {
     return (
-        <section className="py-32 max-w-7xl mx-auto px-6">
+        <section id="services" className="py-32 max-w-7xl mx-auto px-6">
             <div className="mb-20 max-w-3xl">
-                <h2 className="text-sm font-bold text-gradient uppercase tracking-wider mb-4">Core Capabilities</h2>
+                <h2 className="text-sm font-bold text-structura-black uppercase tracking-wider mb-4">Core Capabilities</h2>
                 <h3 className="text-4xl md:text-5xl font-bold font-display text-structura-black mb-6">Engineered for the Scale of Tomorrow.</h3>
                 <p className="text-slate-500 text-xl leading-relaxed">
                     We don&apos;t just fix computers. We architect resilient systems that serve as the foundation for your enterprise operations.

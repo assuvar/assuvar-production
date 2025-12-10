@@ -28,6 +28,7 @@ const config: Config = {
         'grid-pattern': "linear-gradient(to right, #e2e8f0 1px, transparent 1px), linear-gradient(to bottom, #e2e8f0 1px, transparent 1px)",
         'blueprint-glow': "radial-gradient(circle at 50% 0%, rgba(103, 103, 255, 0.15) 0%, transparent 60%)",
         'brand-gradient': "var(--brand-gradient)",
+        'accent-gradient': "var(--accent-gradient)",
       },
       animation: {
         'scroll': 'scroll 40s linear infinite',

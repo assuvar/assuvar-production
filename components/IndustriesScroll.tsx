@@ -144,7 +144,7 @@ export default function IndustriesScroll() {
                                     Industries We Serve
                                 </span>
                                 <h2 className="text-4xl md:text-6xl font-bold font-display text-structura-black mb-8 leading-tight">
-                                    Transforming Industries With <span className="text-gradient">Next-Gen Digital Innovation</span>
+                                    Transforming Industries With <span className="text-structura-black">Next-Gen Digital Innovation</span>
                                 </h2>
                                 <p className="text-xl text-slate-500 leading-relaxed max-w-lg mb-12">
                                     Our solutions adapt to the unique needs of each sector—combining AI, automation, and modern engineering to create real impact.

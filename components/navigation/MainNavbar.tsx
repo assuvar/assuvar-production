@@ -12,11 +12,14 @@ import LanguageSwitcher from '../LanguageSwitcher';
 const DesktopMegaMenu = dynamic(() => import('./DesktopMegaMenu'), { ssr: true });
 const MobileFullScreenMenu = dynamic(() => import('./MobileFullScreenMenu'), { ssr: true });
 
+const IndustriesDropdown = dynamic(() => import('./IndustriesDropdown'), { ssr: true });
+const InsightsDropdown = dynamic(() => import('./InsightsDropdown'), { ssr: true });
+const ProductsDropdown = dynamic(() => import('./ProductsDropdown'), { ssr: true });
+
 export default function MainNavbar() {
     const t = useTranslations('Navbar');
     const pathname = usePathname();
 
-    // Reconstruct the logo logic
     return (
         <nav className="fixed w-full top-0 z-50 nav-glass" dir="ltr">
             <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -24,7 +27,7 @@ export default function MainNavbar() {
                     <div className="w-10 h-10 flex items-center justify-center group-hover:rotate-12 transition-transform duration-500">
                         <Image
                             src="/assets/logo.svg"
-                            alt="Structura IT Logo"
+                            alt="Assuvar Logo"
                             width={40}
                             height={40}
                             className="w-full h-full object-contain"
@@ -43,14 +46,17 @@ export default function MainNavbar() {
                 {/* DESKTOP NAV items (> 768px) */}
                 <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
                     <DesktopMegaMenu />
-                    <Link href="#" className="hover:text-structura-black transition-colors">Solutions</Link>
-                    <Link href="#" className="hover:text-structura-black transition-colors">Enterprise</Link>
-                    <Link href="#" className="hover:text-structura-black transition-colors">Insights</Link>
+                    <IndustriesDropdown />
+                    <ProductsDropdown />
+                    <InsightsDropdown />
                 </div>
 
                 {/* Desktop Right Side Actions */}
                 <div className="hidden md:flex items-center gap-6">
-                    <Link href="#" className="btn-fusion px-5 py-2.5 rounded-lg text-sm font-semibold">
+                    <Link
+                        href="/contact"
+                        className="btn-fusion px-5 py-2.5 rounded-lg text-sm font-semibold"
+                    >
                         {t('getConsultation')}
                     </Link>
                     <div className="h-4 w-px bg-slate-300"></div>

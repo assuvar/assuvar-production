@@ -6,15 +6,17 @@ import SmoothScrollProvider from '@/components/SmoothScrollProvider';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import "../globals.css";
+import { locales } from '@/src/i18n/navigation';
+import { ContactModalProvider } from '@/context/ContactModalContext';
+import ContactModal from '@/components/ui/ContactModal';
+import FooterContactForm from '@/components/FooterContactForm';
 
 const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: '--font-space-grotesk' });
 
-import { locales } from '@/src/i18n/navigation';
-
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
-  const baseUrl = 'https://structura-it.com'; // Replace with actual domain
+  const baseUrl = 'https://assuvar.com'; // Replace with actual domain
 
   const languages: Record<string, string> = {};
   locales.forEach(l => {
@@ -57,6 +59,7 @@ export default async function RootLayout({
           <SmoothScrollProvider>
             <Navbar />
             {children}
+            <FooterContactForm />
             <Footer />
           </SmoothScrollProvider>
         </NextIntlClientProvider>

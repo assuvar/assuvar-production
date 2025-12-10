@@ -13,8 +13,51 @@
       It exists solely for Netlify's build bots to detect form handling support.
       Any form name you use in the app should be added here or have its own static HTML file if using dynamic React forms.
     -->
-    <form name="netlify-detection" netlify netlify-honeypot="bot-field" hidden>
-        <input type="text" name="dummy-field" />
+    <!-- 
+      NETLIFY FORM DEFINITIONS
+      These hidden forms ensure Netlify's build bot detects the inputs correctly.
+    -->
+
+    <!-- 1. Main Contact Form (Full) -->
+    <form name="assuvar-contact" netlify netlify-honeypot="bot-field" hidden>
+        <input type="hidden" name="form-name" />
+        <input type="hidden" name="form-type" />
+        <input type="hidden" name="page-source" />
+        <input type="text" name="name" />
+        <input type="email" name="email" />
+        <input type="tel" name="phone" />
+        <input type="text" name="location" />
+        <input type="text" name="company" />
+        <input type="text" name="role" />
+        <select name="industry"></select>
+        <select name="referrer"></select>
+        <input type="checkbox" name="services" />
+        <input type="radio" name="timeline" />
+        <textarea name="message"></textarea>
+    </form>
+
+    <!-- 2. Compact Contact Form (Footer/Modal) -->
+    <form name="assuvar-contact-compact" netlify netlify-honeypot="bot-field" hidden>
+        <input type="hidden" name="form-name" />
+        <input type="hidden" name="form-type" />
+        <input type="hidden" name="page-source" />
+        <input type="text" name="name" />
+        <input type="email" name="email" />
+        <select name="service"></select>
+    </form>
+
+    <!-- 3. Partner Form -->
+    <form name="assuvar-partner" netlify netlify-honeypot="bot-field" hidden>
+        <input type="hidden" name="form-name" />
+        <input type="hidden" name="form-type" />
+        <input type="hidden" name="page-source" />
+        <input type="text" name="name" />
+        <input type="email" name="email" />
+        <input type="tel" name="phone" />
+        <input type="text" name="location" />
+        <input type="text" name="company" />
+        <select name="partnership-type"></select>
+        <textarea name="message"></textarea>
     </form>
 </body>
 

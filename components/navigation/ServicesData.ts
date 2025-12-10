@@ -28,7 +28,7 @@ export const servicesData: ServiceCategory[] = [
         services: [
             {
                 id: "business-analytics",
-                label: "Business Analytics & Visualization",
+                label: "Business Analytics",
                 slug: "business-analytics",
                 description: "Transform data into actionable insights."
             },
@@ -40,25 +40,25 @@ export const servicesData: ServiceCategory[] = [
             },
             {
                 id: "computer-vision",
-                label: "Computer Vision (AI-assisted)",
+                label: "Computer Vision",
                 slug: "computer-vision",
                 description: "Analyze visual data with AI."
             },
             {
                 id: "data-cleaning",
-                label: "Data Cleaning & Preparation",
+                label: "Data Cleaning",
                 slug: "data-cleaning",
-                description: "high-quality data preparation services."
+                description: "High-quality data preparation services."
             },
             {
                 id: "annotation",
-                label: "Data Annotation & Labelling",
+                label: "Data Annotation",
                 slug: "annotation",
                 description: "Precision labeling for ML models."
             },
             {
                 id: "ai-automation",
-                label: "AI Automation for Analytics",
+                label: "AI Automation",
                 slug: "ai-automation",
                 description: "Automate complex analytical workflows."
             },
@@ -77,7 +77,7 @@ export const servicesData: ServiceCategory[] = [
         services: [
             {
                 id: "ui-ux",
-                label: "UI / UX Design",
+                label: "UI/UX Design",
                 slug: "ui-ux",
                 description: "User-centric design experiences."
             },
@@ -89,19 +89,19 @@ export const servicesData: ServiceCategory[] = [
             },
             {
                 id: "mobile-development",
-                label: "Basic Mobile App Development",
+                label: "Mobile App Development",
                 slug: "mobile-development",
                 description: "iOS and Android hybrid solutions."
             },
             {
                 id: "app-support",
-                label: "Application Support & Maintenance",
+                label: "App Support",
                 slug: "app-support",
                 description: "24/7 reliability for your apps."
             },
             {
                 id: "cloud-setup",
-                label: "Basic Cloud Hosting Setup",
+                label: "Cloud Hosting",
                 slug: "cloud-setup",
                 description: "Seamless cloud infrastructure deployment."
             },
@@ -132,31 +132,31 @@ export const servicesData: ServiceCategory[] = [
             },
             {
                 id: "smart-workflow",
-                label: "Smart Workflow Automation",
+                label: "Workflow Automation",
                 slug: "smart-workflow",
                 description: "Optimize business processes intelligently."
             },
             {
                 id: "rpa",
-                label: "RPA (beginner level)",
+                label: "RPA Solutions",
                 slug: "rpa",
                 description: "Robotic process automation solutions."
             },
             {
                 id: "ai-assistant-integration",
-                label: "AI Assistant Integration",
+                label: "AI Assistants",
                 slug: "ai-assistant-integration",
                 description: "Integrate LLMs into your daily workflow."
             },
             {
                 id: "process-mining",
-                label: "Process Mining (AI-assisted)",
+                label: "Process Mining",
                 slug: "process-mining",
                 description: "Discover and fix process bottlenecks."
             },
             {
                 id: "decision-automation",
-                label: "Decision Support Automation",
+                label: "Decision Automation",
                 slug: "decision-automation",
                 description: "Data-driven automated decision making."
             },
@@ -175,19 +175,19 @@ export const servicesData: ServiceCategory[] = [
         services: [
             {
                 id: "manual-testing",
-                label: "Manual Website Testing",
+                label: "Manual Testing",
                 slug: "manual-testing",
                 description: "Detailed human-verified quality assurance."
             },
             {
                 id: "mobile-app-testing",
-                label: "Mobile App Testing",
+                label: "Mobile Testing",
                 slug: "mobile-app-testing",
                 description: "Comprehensive coverage across devices."
             },
             {
                 id: "test-automation",
-                label: "AI-Assisted Test Automation",
+                label: "Test Automation",
                 slug: "test-automation",
                 description: "Speed up testing cycles with AI."
             },
@@ -199,25 +199,25 @@ export const servicesData: ServiceCategory[] = [
             },
             {
                 id: "uat",
-                label: "UAT Testing",
+                label: "UAT",
                 slug: "uat",
                 description: "User Acceptance Testing for final sign-off."
             },
             {
                 id: "localization",
-                label: "Localization Testing",
+                label: "Localization",
                 slug: "localization",
                 description: "Ensure global readiness of your product."
             },
             {
                 id: "accessibility",
-                label: "Accessibility Testing",
+                label: "Accessibility",
                 slug: "accessibility",
                 description: "WCAG compliance and inclusive design."
             },
             {
                 id: "performance-testing",
-                label: "Light Performance Testing",
+                label: "Performance Testing",
                 slug: "performance-testing",
                 description: "Load testing for optimal performance."
             },
