@@ -14,10 +14,65 @@ interface GlobalContactFormProps {
 export default function GlobalContactForm({ mode = 'client', className = '', onSuccess, compact = false }: GlobalContactFormProps) {
     const pathname = usePathname();
     const [pageSource, setPageSource] = useState('');
+    const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
 
     useEffect(() => {
         setPageSource(pathname || window.location.pathname);
     }, [pathname]);
+
+    const formName = mode === 'partner' ? 'assuvar-partner' : (compact ? 'assuvar-contact-compact' : 'assuvar-contact');
+    const subject = `New Submission: ${formName} (${new Date().toLocaleDateString()})`;
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setStatus('submitting');
+
+        const form = e.currentTarget;
+        const formData = new FormData(form);
+
+        // Explicitly set sensitive fields to ensure they override any weirdness
+        formData.set('form-name', formName);
+        formData.set('subject', subject);
+
+        try {
+            const response = await fetch('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(formData as any).toString(),
+            });
+
+            if (response.ok) {
+                setStatus('success');
+                if (onSuccess) onSuccess();
+                form.reset();
+            } else {
+                throw new Error('Network response was not ok.');
+            }
+        } catch (error) {
+            console.error('Form submission error:', error);
+            setStatus('error');
+        }
+    };
+
+    if (status === 'success') {
+        return (
+            <div className={`bg-white rounded-3xl p-8 md:p-10 shadow-xl border border-slate-100 flex flex-col items-center justify-center text-center space-y-4 min-h-[400px] ${className}`}>
+                <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center text-green-500 mb-2">
+                    <Send className="w-8 h-8" />
+                </div>
+                <h3 className="text-2xl font-bold text-structura-black">Message Sent!</h3>
+                <p className="text-slate-500 max-w-xs">
+                    Thank you for contacting Assuvar. Our team will get back to you within 24 hours.
+                </p>
+                <button
+                    onClick={() => setStatus('idle')}
+                    className="mt-6 px-6 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition-colors text-sm"
+                >
+                    Send Another
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div className={`bg-white rounded-3xl p-8 md:p-10 shadow-xl border border-slate-100 ${className}`}>
@@ -33,18 +88,18 @@ export default function GlobalContactForm({ mode = 'client', className = '', onS
             </div>
 
             <form
-                name={mode === 'partner' ? 'assuvar-partner' : (compact ? 'assuvar-contact-compact' : 'assuvar-contact')}
-                method="POST"
-                action="/thank-you"
+                name={formName}
+                onSubmit={handleSubmit}
                 data-netlify="true"
                 netlify-honeypot="bot-field"
                 className="space-y-6"
             >
                 {/* Netlify Hidden Fields */}
-                <input type="hidden" name="form-name" value={mode === 'partner' ? 'assuvar-partner' : (compact ? 'assuvar-contact-compact' : 'assuvar-contact')} />
+                <input type="hidden" name="form-name" value={formName} />
                 <input type="hidden" name="bot-field" />
                 <input type="hidden" name="form-type" value={mode} />
                 <input type="hidden" name="page-source" value={pageSource} />
+                <input type="hidden" name="subject" value={subject} />
 
                 {/* COMPACT MODE FIELDS */}
                 {compact && mode === 'client' ? (
@@ -226,12 +281,23 @@ export default function GlobalContactForm({ mode = 'client', className = '', onS
 
                 {/* TRUST BADGES & SUBMIT */}
                 <div className="pt-4 border-t border-slate-100 mt-6">
-                    <button type="submit" className="w-full py-4 bg-structura-black text-white font-bold rounded-lg hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 flex items-center justify-center gap-2 group relative overflow-hidden">
+                    <button
+                        type="submit"
+                        disabled={status === 'submitting'}
+                        className="w-full py-4 bg-structura-black text-white font-bold rounded-lg hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 flex items-center justify-center gap-2 group relative overflow-hidden disabled:opacity-70 disabled:cursor-not-allowed"
+                    >
                         <span className="relative z-10 flex items-center gap-2">
-                            {compact ? 'Get a Call Back' : 'Submit Request'} <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            {status === 'submitting' ? 'Sending...' : (compact ? 'Get a Call Back' : 'Submit Request')}
+                            {status !== 'submitting' && <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
                         </span>
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-brand-gradient"></div>
                     </button>
+
+                    {status === 'error' && (
+                        <p className="text-center text-red-500 text-sm mt-3">
+                            Something went wrong. Please try again or email us directly at team@assuvar.com.
+                        </p>
+                    )}
 
                     {!compact && (
                         <div className="flex justify-center gap-6 mt-6 text-xs text-slate-400">
