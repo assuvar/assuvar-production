@@ -110,11 +110,11 @@ export default function SaleDetailPage({ params }: { params: Promise<{ id: strin
                             <div className="grid grid-cols-2 gap-8 pt-6">
                                 <div>
                                     <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Total Amount</p>
-                                    <p className="font-bold text-structura-black">${sale.totalAmount}</p>
+                                    <p className="font-bold text-structura-black">{sale.currency || sale.quoteId?.currency || '$'} {sale.totalAmount}</p>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Pending Amount</p>
-                                    <p className="font-bold text-red-600">${sale.pendingAmount}</p>
+                                    <p className="font-bold text-red-600">{sale.currency || sale.quoteId?.currency || '$'} {sale.pendingAmount}</p>
                                 </div>
                             </div>
                         </CardContent>

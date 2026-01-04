@@ -19,7 +19,7 @@ export function StatusBadge({ status, type = 'neutral', className }: StatusBadge
 
     // Auto-detect based on common keywords if type is default
     let detectedType = type;
-    if (type === 'neutral') {
+    if (type === 'neutral' && status) {
         const lowerStatus = status.toLowerCase();
         if (['active', 'paid', 'completed', 'won', 'approved'].includes(lowerStatus)) detectedType = 'success';
         else if (['pending', 'processing', 'negotiation', 'contacted'].includes(lowerStatus)) detectedType = 'warning';

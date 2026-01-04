@@ -13,6 +13,22 @@ const AUTH_ROUTES = ['/login'];
 export default function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
+    // Helper function to determine dashboard based on role
+    const getDashboard = (role: string) => {
+        switch (role) {
+            case 'admin':
+                return '/admin';
+            case 'client':
+                return '/client';
+            case 'partner':
+                return '/partner';
+            case 'employee':
+                return '/employee/dashboard';
+            default:
+                return '/'; // Fallback for unknown roles
+        }
+    };
+
     // --- A. EXCLUSIONS ---
     // Skip internal Next.js paths, APIs, and static files
     if (
@@ -32,7 +48,7 @@ export default function middleware(request: NextRequest) {
         // 1. Check for HttpOnly Auth Token
         const token = request.cookies.get('auth_token')?.value;
 
-        // 2. Protect Admin Routes
+        // 2. Protect Admin & Role-Based Routes
         if (isAdminPath) {
             if (!token) {
                 // Not authenticated -> Redirect to Login
@@ -46,8 +62,33 @@ export default function middleware(request: NextRequest) {
                 // Optional: Append ?redirect=...
                 return NextResponse.redirect(url);
             }
-            // Authenticated -> Allow access
-            // (Role checking typically happens in layout or page for better UX, or can be done here if we decode token)
+
+            // Authenticated -> Check Role Access
+            const userInfo = request.cookies.get('user_info')?.value;
+            if (userInfo) {
+                try {
+                    const user = JSON.parse(userInfo);
+                    const role = user.role;
+
+                    // Role to Path Mapping
+                    if (pathname.startsWith('/admin') && role !== 'admin') {
+                        return NextResponse.redirect(new URL(getDashboard(role), request.url));
+                    }
+                    if (pathname.startsWith('/client') && role !== 'client') {
+                        return NextResponse.redirect(new URL(getDashboard(role), request.url));
+                    }
+                    if (pathname.startsWith('/partner') && role !== 'partner') {
+                        return NextResponse.redirect(new URL(getDashboard(role), request.url));
+                    }
+                    if (pathname.startsWith('/employee') && role !== 'employee') {
+                        return NextResponse.redirect(new URL(getDashboard(role), request.url));
+                    }
+                } catch (e) {
+                    // If cookie is corrupted, maybe let it pass (backend handles) or force login?
+                    // Safer to let pass to avoid infinite loop if cookie is weird, 
+                    // but ideally we should logout. For now, let pass as fallback.
+                }
+            }
             return NextResponse.next();
         }
 

@@ -7,7 +7,9 @@ export interface NavigationItem {
 export const adminNavigation: NavigationItem[] = [
     { name: 'Dashboard', href: '/admin', icon: 'LayoutDashboard' },
     { name: 'Leads', href: '/admin/leads', icon: 'Users' },
-    { name: 'Sales & Quotes', href: '/admin/sales', icon: 'FileText' },
+    { name: 'Clients', href: '/admin/clients', icon: 'Briefcase' }, // NEW
+    { name: 'Quotations', href: '/admin/quotes', icon: 'FileText' },
+    { name: 'Sales', href: '/admin/sales', icon: 'DollarSign' }, // Renamed from Sales & Quotes to avoid confusion, changed icon to DollarSign
     { name: 'Projects', href: '/admin/projects', icon: 'Briefcase' },
     { name: 'Payroll', href: '/admin/payroll', icon: 'DollarSign' },
     { name: 'Marketing', href: '/admin/marketing', icon: 'Megaphone' },

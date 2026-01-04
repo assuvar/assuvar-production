@@ -48,6 +48,7 @@ export default function SalesPage() {
                 <Table>
                     <TableHeader>
                         <TableRow>
+                            <TableHead>Sale ID</TableHead>
                             <TableHead>Client Ref</TableHead>
                             <TableHead>Lead</TableHead>
                             <TableHead>Total Amount</TableHead>
@@ -64,17 +65,20 @@ export default function SalesPage() {
                         ) : (
                             sales.map((sale) => (
                                 <TableRow key={sale._id} className="cursor-pointer hover:bg-slate-50">
-                                    <TableCell className="font-medium text-structura-blue">
-                                        <Link href={`/admin/sales/${sale._id}`}>
-                                            {sale.clientReference || 'N/A'}
+                                    <TableCell className="font-medium text-structura-black">
+                                        <Link href={`/admin/sales/${sale._id}`} className="hover:text-structura-blue hover:underline">
+                                            {sale.saleNumber || sale._id.substring(sales.length - 6)}
                                         </Link>
+                                    </TableCell>
+                                    <TableCell className="font-medium text-slate-600">
+                                        {sale.clientReference || 'N/A'}
                                     </TableCell>
                                     <TableCell className="font-medium text-structura-black">
                                         {sale.quoteId?.leadId?.name || 'Unknown'}
                                     </TableCell>
-                                    <TableCell>${sale.totalAmount}</TableCell>
-                                    <TableCell className="text-green-600">${sale.paidAmount}</TableCell>
-                                    <TableCell className="text-red-500 font-bold">${sale.pendingAmount}</TableCell>
+                                    <TableCell>{sale.currency || sale.quoteId?.currency || '$'} {sale.totalAmount}</TableCell>
+                                    <TableCell className="text-green-600">{sale.currency || sale.quoteId?.currency || '$'} {sale.paidAmount}</TableCell>
+                                    <TableCell className="text-red-500 font-bold">{sale.currency || sale.quoteId?.currency || '$'} {sale.pendingAmount}</TableCell>
                                     <TableCell className="text-right">
                                         <Link href={`/admin/sales/${sale._id}`}>
                                             <Button variant="ghost" size="sm">View</Button>

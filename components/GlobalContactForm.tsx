@@ -30,16 +30,23 @@ export default function GlobalContactForm({ mode = 'client', className = '', onS
         const form = e.currentTarget;
         const formData = new FormData(form);
 
-        // Explicitly set sensitive fields to ensure they override any weirdness
-        formData.set('form-name', formName);
-        formData.set('subject', subject);
+        const payload = {
+            name: formData.get('name'),
+            email: formData.get('email'),
+            phone: formData.get('phone'),
+            source: 'Website – Contact Page', // Hardcoded for this form
+            notes: formData.get('message'),
+            // Optional: Map service to serviceInterest (as array) if present
+            serviceInterest: formData.get('service') ? [formData.get('service')] : [],
+            // Client dashboard might have specific implementation details
+        };
 
         try {
-            // Post to the static forms file to bypass Next.js handling
-            const response = await fetch('/__netlify-forms.html', {
+            // Using direct fetch to our backend API
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/leads/public`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams(formData as any).toString(),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
             });
 
             if (response.ok) {
@@ -47,7 +54,8 @@ export default function GlobalContactForm({ mode = 'client', className = '', onS
                 if (onSuccess) onSuccess();
                 form.reset();
             } else {
-                throw new Error('Network response was not ok.');
+                const errData = await response.json();
+                throw new Error(errData.message || 'Network response was not ok.');
             }
         } catch (error) {
             console.error('Form submission error:', error);
