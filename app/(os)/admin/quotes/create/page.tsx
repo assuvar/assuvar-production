@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/os/ui/Car
 import api from '@/lib/axios';
 import { Search, Plus, User, Mail, Phone, Hash } from 'lucide-react';
 import Link from 'next/link';
+import { AddLeadModal } from '@/components/os/crm/AddLeadModal';
 
 function CreateQuoteContent() {
     const router = useRouter();
@@ -23,6 +24,7 @@ function CreateQuoteContent() {
     const [foundLeads, setFoundLeads] = useState<any[]>([]);
     const [selectedLead, setSelectedLead] = useState<any>(null);
     const [isSearching, setIsSearching] = useState(false);
+    const [showAddModal, setShowAddModal] = useState(false);
 
     // Quote Data States
     const [currency, setCurrency] = useState('INR');
@@ -38,7 +40,8 @@ function CreateQuoteContent() {
     useEffect(() => {
         fetchSuggestions();
         if (cloneId) fetchCloneData(cloneId);
-    }, [cloneId]);
+        if (leadId) fetchLeadData(leadId);
+    }, [cloneId, leadId]);
 
     useEffect(() => {
         if (searchTerm.length > 2) {
@@ -49,10 +52,7 @@ function CreateQuoteContent() {
         }
     }, [searchTerm]);
 
-    // Initialize logic if leadId or selectedLead is present
-    const finalLead = selectedLead || (leadId ? { _id: leadId, name: 'Lead from URL', email: 'Loading...', phone: '' } : null);
-    // Note: If just leadId, we might want to fetch details, but for now we trust ID or wait for user to select. 
-    // Ideally, we fetch it. But for robust UI, let's Stick to the "Select First" unless explicitly passed.
+    const finalLead = selectedLead;
 
     // --- API Calls ---
 
@@ -77,6 +77,18 @@ function CreateQuoteContent() {
             if (Array.isArray(res.data)) setSuggestions(res.data);
         } catch (error) {
             // console.error("Failed suggestions", error); // Silently fail if endpoint missing
+        }
+    };
+
+    const fetchLeadData = async (id: string) => {
+        setIsLoading(true);
+        try {
+            const res = await api.get(`/leads/${id}`);
+            setSelectedLead(res.data);
+        } catch (error) {
+            console.error("Failed to fetch lead", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -196,8 +208,16 @@ function CreateQuoteContent() {
                 )}
             </PageHeader>
 
+            {/* Loading State */}
+            {isLoading && !finalLead && (
+                <div className="flex flex-col items-center justify-center py-20 animate-pulse">
+                    <div className="h-12 w-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+                    <p className="text-slate-500 font-medium italic">Fetching lead details...</p>
+                </div>
+            )}
+
             {/* STEP 1: SELECT CUSTOMER */}
-            {!finalLead && (
+            {!finalLead && !isLoading && (
                 <div className="flex flex-col items-center justify-center py-10 animate-in fade-in zoom-in-95 duration-500">
                     <Card className="w-full max-w-2xl border-blue-200 shadow-xl">
                         <CardHeader className="bg-blue-50/50 border-b border-blue-100 pb-4">
@@ -255,15 +275,27 @@ function CreateQuoteContent() {
 
                             <div className="pt-6 border-t border-dashed border-slate-200 text-center">
                                 <p className="text-sm text-slate-500 mb-2">Customer not found?</p>
-                                <Link href="/admin/leads/create">
-                                    <Button variant="outline" className="w-full sm:w-auto hover:border-blue-300 hover:text-blue-600">
-                                        <Plus className="h-4 w-4 mr-2" /> Create New Lead
-                                    </Button>
-                                </Link>
+                                <Button variant="outline" className="w-full sm:w-auto hover:border-blue-300 hover:text-blue-600" onClick={() => setShowAddModal(true)}>
+                                    <Plus className="h-4 w-4 mr-2" /> Create New Lead
+                                </Button>
                             </div>
                         </CardContent>
                     </Card>
                 </div>
+            )}
+
+            {showAddModal && (
+                <AddLeadModal
+                    onClose={() => setShowAddModal(false)}
+                    onSuccess={(newLead) => {
+                        setShowAddModal(false);
+                        if (newLead && newLead._id) {
+                            selectLead(newLead);
+                        } else {
+                            searchLeads('');
+                        }
+                    }}
+                />
             )}
 
             {/* STEP 2: QUOTE FORM */}

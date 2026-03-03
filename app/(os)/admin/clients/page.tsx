@@ -66,7 +66,7 @@ export default function ClientsPage() {
                             clients.map((client) => (
                                 <TableRow key={client._id}>
                                     <TableCell className="font-mono text-xs text-slate-500">
-                                        {client.userId?.username || 'NO_ACCESS'}
+                                        {client.clientId || 'NO_ID'}
                                     </TableCell>
                                     <TableCell className="font-medium text-structura-black">
                                         {client.companyName}
@@ -74,7 +74,7 @@ export default function ClientsPage() {
                                     <TableCell>{client.contactPerson}</TableCell>
                                     <TableCell>{client.email}</TableCell>
                                     <TableCell>
-                                        <StatusBadge status={client.userId ? 'active' : 'pending'} type={client.userId ? 'success' : 'neutral'} />
+                                        <StatusBadge status={client.portalAccess ? 'Active' : 'Pending Login'} />
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <Link href={`/admin/clients/${client._id}`}>

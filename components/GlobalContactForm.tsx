@@ -34,11 +34,17 @@ export default function GlobalContactForm({ mode = 'client', className = '', onS
             name: formData.get('name'),
             email: formData.get('email'),
             phone: formData.get('phone'),
-            source: 'Website – Contact Page', // Hardcoded for this form
-            notes: formData.get('message'),
-            // Optional: Map service to serviceInterest (as array) if present
-            serviceInterest: formData.get('service') ? [formData.get('service')] : [],
-            // Client dashboard might have specific implementation details
+            country: formData.get('country'),
+            companyName: formData.get('companyName'),
+            industry: formData.get('industry'),
+            source: formData.get('referrer') || (mode === 'partner' ? 'Referral' : 'Website – Contact Page'),
+            notes: formData.get('message')
+                + (formData.get('role') ? `\nRole: ${formData.get('role')}` : '')
+                + (formData.get('partnership-type') ? `\nPartnership: ${formData.get('partnership-type')}` : ''),
+            serviceInterest: formData.getAll('services').length > 0 ? formData.getAll('services') : (formData.get('service') ? [formData.get('service')] : []),
+            leadType: 'Inbound',
+            referralEmail: formData.get('referralEmail') || undefined,
+            referralId: formData.get('referralId') || undefined
         };
 
         try {
@@ -133,13 +139,13 @@ export default function GlobalContactForm({ mode = 'client', className = '', onS
                                 <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                 <select name="service" required className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-structura-blue/20 focus:border-structura-blue transition-all appearance-none text-slate-600">
                                     <option value="" disabled selected>Select Service</option>
-                                    <option value="data">Data & Analytics</option>
-                                    <option value="product">Product Engineering</option>
-                                    <option value="automation">Intelligent Automation</option>
-                                    <option value="quality">Quality Engineering</option>
-                                    <option value="cloud">Cloud & DevOps</option>
-                                    <option value="ai">AI Solutions</option>
-                                    <option value="other">Other</option>
+                                    <option value="Data Analytics">Data Analytics</option>
+                                    <option value="Product Engineering">Product Engineering</option>
+                                    <option value="Intelligent Automation">Intelligent Automation</option>
+                                    <option value="Quality Engineering">Quality Engineering</option>
+                                    <option value="Cloud and DevOps">Cloud and DevOps</option>
+                                    <option value="AI Solutions">AI Solutions</option>
+                                    <option value="Consultancy">Consultancy</option>
                                 </select>
                             </div>
                         </div>
@@ -174,10 +180,10 @@ export default function GlobalContactForm({ mode = 'client', className = '', onS
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">Location / Country *</label>
+                                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">Country / Location *</label>
                                 <div className="relative">
                                     <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                    <input type="text" name="location" required className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-structura-blue/20 focus:border-structura-blue transition-all" placeholder="New York, USA" />
+                                    <input type="text" name="country" required className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-structura-blue/20 focus:border-structura-blue transition-all" placeholder="New York, USA" />
                                 </div>
                             </div>
                         </div>
@@ -187,7 +193,7 @@ export default function GlobalContactForm({ mode = 'client', className = '', onS
                                 <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">Company Name *</label>
                                 <div className="relative">
                                     <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                    <input type="text" name="company" required className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-structura-blue/20 focus:border-structura-blue transition-all" placeholder="Acme Corp" />
+                                    <input type="text" name="companyName" required className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-structura-blue/20 focus:border-structura-blue transition-all" placeholder="Acme Corp" />
                                 </div>
                             </div>
                             {mode === 'client' && (
@@ -210,13 +216,14 @@ export default function GlobalContactForm({ mode = 'client', className = '', onS
                                         <div className="relative">
                                             <select name="industry" required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-structura-blue/20 focus:border-structura-blue transition-all appearance-none text-slate-600">
                                                 <option value="" disabled selected>Select Industry</option>
-                                                <option value="retail">Retail & Ecommerce</option>
-                                                <option value="manufacturing">Manufacturing</option>
-                                                <option value="real-estate">Real Estate</option>
-                                                <option value="healthcare">Healthcare</option>
-                                                <option value="education">Education</option>
-                                                <option value="agency">Agency / Services</option>
-                                                <option value="other">Other</option>
+                                                <option value="Retail & Ecommerce">Retail & Ecommerce</option>
+                                                <option value="Manufacturing">Manufacturing</option>
+                                                <option value="Real Estate">Real Estate</option>
+                                                <option value="Healthcare">Healthcare</option>
+                                                <option value="Education">Education</option>
+                                                <option value="Agency / Services">Agency / Services</option>
+                                                <option value="Finance & Fintech">Finance & Fintech</option>
+                                                <option value="Other">Other</option>
                                             </select>
                                         </div>
                                     </div>
@@ -238,7 +245,7 @@ export default function GlobalContactForm({ mode = 'client', className = '', onS
                                 <div className="space-y-3">
                                     <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">Service Category Needed *</label>
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                        {["Data & Analytics", "Product Engineering", "Intelligent Automation", "Quality Engineering", "Cloud & DevOps", "AI Solutions", "Consultation Only"].map(service => (
+                                        {['Data Analytics', 'Product Engineering', 'Intelligent Automation', 'Quality Engineering', 'Cloud and DevOps', 'AI Solutions', 'Consultancy'].map(service => (
                                             <label key={service} className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer p-2 rounded hover:bg-slate-50 transition-colors">
                                                 <input type="checkbox" name="services" value={service} className="w-4 h-4 rounded text-structura-blue focus:ring-structura-blue border-slate-300" />
                                                 {service}
@@ -247,17 +254,6 @@ export default function GlobalContactForm({ mode = 'client', className = '', onS
                                     </div>
                                 </div>
 
-                                <div className="space-y-3">
-                                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">Project Timeline</label>
-                                    <div className="flex flex-wrap gap-4">
-                                        {["Immediately", "1-3 Months", "3-6 Months", "6-12 Months", "Not decided"].map(time => (
-                                            <label key={time} className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
-                                                <input type="radio" name="timeline" value={time} className="w-4 h-4 text-structura-blue focus:ring-structura-blue border-slate-300" />
-                                                {time}
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
 
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">Additional Requirements (Optional)</label>

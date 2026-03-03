@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/os/ui/PageHeader";
 import { Card, CardContent } from "@/components/os/ui/Card";
 import { Button } from "@/components/os/ui/Button"; // Check path
 import { Input } from "@/components/os/ui/Input";   // Check path
+import { ShieldCheck } from "lucide-react";
 import axios from 'axios'; // Direct call to proxy
 
 const roles = [
@@ -132,6 +133,48 @@ export default function InviteUserPage() {
                             {message}
                         </div>
                     )}
+                </CardContent>
+            </Card>
+
+            <Card className="mt-8 border-l-4 border-l-structura-blue shadow-sm">
+                <CardContent className="p-6">
+                    <h3 className="text-lg font-bold flex items-center gap-2 mb-4 text-structura-black">
+                        <ShieldCheck className="h-5 w-5 text-structura-blue" />
+                        Access Control Rules & Permissions
+                    </h3>
+                    <div className="overflow-x-auto border border-slate-200 rounded-lg">
+                        <table className="w-full text-sm text-left whitespace-nowrap lg:whitespace-normal">
+                            <thead className="bg-slate-50 border-b text-slate-700">
+                                <tr>
+                                    <th className="p-3 font-semibold w-1/4">Role</th>
+                                    <th className="p-3 font-semibold w-1/4">Access Level</th>
+                                    <th className="p-3 font-semibold">Permissions & Restrictions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                <tr>
+                                    <td className="p-3 font-bold text-purple-700">Admin</td>
+                                    <td className="p-3"><span className="px-2 py-1 bg-purple-100 text-purple-800 text-[10px] rounded uppercase font-bold tracking-wider">Full Access</span></td>
+                                    <td className="p-3 leading-relaxed text-slate-600">Unrestricted access. Can manage users, assign roles, edit/delete leads, approve quotes, collect payments, and override pipeline statuses.</td>
+                                </tr>
+                                <tr>
+                                    <td className="p-3 font-bold text-blue-700">Employee / Sales</td>
+                                    <td className="p-3"><span className="px-2 py-1 bg-blue-100 text-blue-800 text-[10px] rounded uppercase font-bold tracking-wider">Operational (CRM)</span></td>
+                                    <td className="p-3 leading-relaxed text-slate-600">Can view, create, and update Leads, Quotes, and Clients. <br /><strong className="text-red-500 font-medium">Restricted:</strong> Cannot delete records, edit accepted quotes, or verify payments.</td>
+                                </tr>
+                                <tr>
+                                    <td className="p-3 font-bold text-green-700">Client</td>
+                                    <td className="p-3"><span className="px-2 py-1 bg-green-100 text-green-800 text-[10px] rounded uppercase font-bold tracking-wider">Restricted Portal</span></td>
+                                    <td className="p-3 leading-relaxed text-slate-600">Can only view their own projects, approved quotes, invoices, and documents via the Client Portal. No access to the Admin OS.</td>
+                                </tr>
+                                <tr>
+                                    <td className="p-3 font-bold text-orange-700">Partner</td>
+                                    <td className="p-3"><span className="px-2 py-1 bg-orange-100 text-orange-800 text-[10px] rounded uppercase font-bold tracking-wider">Affiliate Access</span></td>
+                                    <td className="p-3 leading-relaxed text-slate-600">Can view leads submitted by them and track their commission payouts and status.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </CardContent>
             </Card>
         </div>

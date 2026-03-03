@@ -18,12 +18,11 @@ import { StatusBadge } from '@/components/os/ui/StatusBadge';
 import { useRouter } from 'next/navigation';
 
 export default function QuotesPage() {
-    const [allQuotes, setAllQuotes] = useState<any[]>([]); // Store full list
-    const [filteredQuotes, setFilteredQuotes] = useState<any[]>([]); // Display list
+    const [allQuotes, setAllQuotes] = useState<any[]>([]);
+    const [filteredQuotes, setFilteredQuotes] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
-    // Filters
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('ALL');
 
@@ -32,13 +31,12 @@ export default function QuotesPage() {
     }, []);
 
     useEffect(() => {
-        // Filter Logic
         let res = allQuotes;
 
         if (searchTerm) {
             const lower = searchTerm.toLowerCase();
             res = res.filter(q =>
-                (q.quoteNumber || '').toLowerCase().includes(lower) ||
+                (q.quotationId || q.quoteNumber || '').toLowerCase().includes(lower) ||
                 (q.leadId?.name || '').toLowerCase().includes(lower) ||
                 (q.leadId?.email || '').toLowerCase().includes(lower) ||
                 (q.grandTotal?.toString() || '').includes(lower)
@@ -68,7 +66,7 @@ export default function QuotesPage() {
         if (confirm('Are you sure you want to delete this quote? This will also unlink it from the lead.')) {
             try {
                 await api.delete(`/quotes/${id}`);
-                setAllQuotes(prev => prev.filter(q => q._id !== id)); // Updates both due to useEffect dependency
+                setAllQuotes(prev => prev.filter(q => q._id !== id));
             } catch (error) {
                 console.error("Failed to delete quote", error);
                 alert("Failed to delete quote");
@@ -89,7 +87,6 @@ export default function QuotesPage() {
                 </Link>
             </PageHeader>
 
-            {/* Filters */}
             <div className="bg-white p-4 rounded-xl border border-structura-border shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
                 <div className="flex gap-4 w-full md:w-auto flex-1">
                     <div className="relative flex-1 max-w-md">
@@ -111,11 +108,10 @@ export default function QuotesPage() {
                         onChange={(e) => setStatusFilter(e.target.value)}
                     >
                         <option value="ALL">All Statuses</option>
-                        <option value="DRAFT">Draft</option>
-                        <option value="SENT">Sent</option>
-                        <option value="ACCEPTED">Accepted</option>
-                        <option value="REJECTED">Rejected</option>
-                        <option value="EXPIRED">Expired</option>
+                        <option value="draft">Draft</option>
+                        <option value="sent">Sent</option>
+                        <option value="accepted">Accepted</option>
+                        <option value="rejected">Rejected</option>
                     </select>
                 </div>
                 <div className="text-sm text-slate-500 font-medium">
@@ -128,7 +124,7 @@ export default function QuotesPage() {
                     <TableHeader>
                         <TableRow>
                             <TableHead>Quote #</TableHead>
-                            <TableHead>Lead / Customer</TableHead>
+                            <TableHead>Customer</TableHead>
                             <TableHead>Date</TableHead>
                             <TableHead>Amount</TableHead>
                             <TableHead>Status</TableHead>
@@ -150,11 +146,10 @@ export default function QuotesPage() {
                             filteredQuotes.map((quote) => (
                                 <TableRow key={quote._id} className="hover:bg-slate-50 transition-colors">
                                     <TableCell className="font-medium text-slate-900">
-                                        {quote.quoteNumber || quote._id.substring(quote._id.length - 6).toUpperCase()}
+                                        {quote.quotationId || quote.quoteNumber || quote._id.substring(quote._id.length - 6).toUpperCase()}
                                     </TableCell>
                                     <TableCell>
                                         <div className="font-medium">{quote.leadId?.name || 'Unknown Lead'}</div>
-                                        <div className="text-xs text-slate-500 truncate max-w-[150px]">{quote.leadId?.email}</div>
                                     </TableCell>
                                     <TableCell>{new Date(quote.createdAt).toLocaleDateString()}</TableCell>
                                     <TableCell className="font-momo font-medium">
@@ -166,84 +161,73 @@ export default function QuotesPage() {
                                     <TableCell className="text-right">
                                         <div className="flex items-center justify-end gap-2">
                                             {/* Send Email */}
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={async () => {
-                                                    if (confirm(`Send quote to ${quote.leadId?.email || 'lead'}?`)) {
-                                                        try {
-                                                            await api.post(`/quotes/${quote._id}/send`);
-                                                            alert('Quote sent successfully!');
-                                                            fetchQuotes();
-                                                        } catch (error: any) {
-                                                            console.error(error);
-                                                            alert(error.response?.data?.message || 'Failed to send email');
-                                                        }
-                                                    }
-                                                }}
-                                                className="border-slate-200 text-slate-600 hover:text-orange-600 hover:bg-orange-50 px-3"
-                                            >
-                                                <Mail className="h-4 w-4 mr-2" /> Email
-                                            </Button>
-
-                                            {/* View PDF */}
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => window.open(`${process.env.NEXT_PUBLIC_API_URL}/quotes/${quote._id}/pdf`, '_blank')}
-                                                className="border-slate-200 text-slate-600 hover:text-purple-600 hover:bg-purple-50 px-3"
-                                            >
-                                                <Eye className="h-4 w-4 mr-2" /> View
-                                            </Button>
-
-                                            {/* Edit */}
-                                            <Link href={`/admin/quotes/${quote._id}/edit`}>
-                                                <Button variant="outline" size="sm" className="border-slate-200 text-slate-600 hover:text-blue-600 hover:bg-blue-50 px-3">
-                                                    <Pencil className="h-4 w-4 mr-2" /> Edit
-                                                </Button>
-                                            </Link>
-
-                                            <div className="w-[1px] h-4 bg-slate-200 mx-1"></div>
-
-                                            {/* Clone */}
-                                            <Link href={`/admin/quotes/create?cloneId=${quote._id}`}>
-                                                <Button variant="outline" size="sm" className="border-slate-200 text-slate-600 px-3 hover:bg-slate-100">
-                                                    <Copy className="h-3.5 w-3.5 mr-2" /> Clone
-                                                </Button>
-                                            </Link>
-
-                                            {/* Convert to Sale */}
-                                            {quote.status !== 'ACCEPTED' && (
+                                            {['draft', 'sent'].includes(quote.status) && (
                                                 <Button
-                                                    variant="outline"
-                                                    size="sm"
+                                                    variant="outline" size="sm"
                                                     onClick={async () => {
-                                                        if (confirm(`Convert Quote #${quote._id.slice(-6).toUpperCase()} to Sale?`)) {
+                                                        if (confirm(`Send quote to ${quote.leadId?.email || 'lead'} with acceptance link?`)) {
                                                             try {
-                                                                await api.post('/sales/convert', { quoteId: quote._id });
-                                                                alert('Converted to Sale!');
+                                                                await api.post(`/quotes/${quote._id}/send`);
+                                                                alert('Quote sent successfully!');
                                                                 fetchQuotes();
-                                                            } catch (err) {
-                                                                console.error(err);
-                                                                alert('Failed to convert');
+                                                            } catch (error: any) {
+                                                                console.error(error);
+                                                                alert(error.response?.data?.message || 'Failed to send email');
                                                             }
                                                         }
                                                     }}
-                                                    className="border-slate-200 text-slate-600 hover:text-green-600 hover:bg-green-50 px-3"
+                                                    className="border-slate-200 text-slate-600 hover:text-orange-600 hover:bg-orange-50 px-3"
                                                 >
-                                                    <DollarSign className="h-4 w-4 mr-2" /> Convert
+                                                    <Mail className="h-4 w-4 mr-2" /> Send
                                                 </Button>
                                             )}
 
-                                            {/* Delete */}
                                             <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleDelete(quote._id)}
-                                                className="border-slate-200 text-slate-600 hover:text-red-600 hover:bg-red-50 px-3"
+                                                variant="outline" size="sm"
+                                                onClick={() => window.open(`${process.env.NEXT_PUBLIC_API_URL}/quotes/${quote._id}/pdf`, '_blank')}
+                                                className="border-slate-200 text-slate-600 hover:text-purple-600 hover:bg-purple-50 px-3"
                                             >
-                                                <Trash2 className="h-4 w-4 mr-2" /> Delete
+                                                <Eye className="h-4 w-4 mr-2" /> View PDF
                                             </Button>
+
+                                            {['draft'].includes(quote.status) && (
+                                                <Link href={`/admin/quotes/${quote._id}/edit`}>
+                                                    <Button variant="outline" size="sm" className="border-slate-200 text-slate-600 hover:text-blue-600 hover:bg-blue-50 px-3">
+                                                        <Pencil className="h-4 w-4 mr-2" /> Edit
+                                                    </Button>
+                                                </Link>
+                                            )}
+
+                                            {['sent', 'accepted', 'rejected'].includes(quote.status) && (
+                                                <Button
+                                                    variant="outline" size="sm"
+                                                    className="border-slate-200 text-slate-600 px-3 hover:text-indigo-600 hover:bg-indigo-50"
+                                                    onClick={async () => {
+                                                        if (confirm('Create a new Revision for this quotation? The current one will be archived.')) {
+                                                            try {
+                                                                const res = await api.post(`/quotes/${quote._id}/revise`, {});
+                                                                router.push(`/admin/quotes/${res.data._id}/edit`);
+                                                            } catch (err: any) {
+                                                                alert(err.response?.data?.message || 'Failed to revise');
+                                                            }
+                                                        }
+                                                    }}
+                                                >
+                                                    <Copy className="h-3.5 w-3.5 mr-2" /> Revise
+                                                </Button>
+                                            )}
+
+                                            <div className="w-[1px] h-4 bg-slate-200 mx-1"></div>
+
+                                            {quote.status !== 'accepted' && (
+                                                <Button
+                                                    variant="outline" size="sm"
+                                                    onClick={() => handleDelete(quote._id)}
+                                                    className="border-slate-200 text-slate-600 hover:text-red-600 hover:bg-red-50 px-3"
+                                                >
+                                                    <Trash2 className="h-4 w-4 mr-2" /> Delete
+                                                </Button>
+                                            )}
                                         </div>
                                     </TableCell>
                                 </TableRow>
