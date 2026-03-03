@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/os/ui/PageHeader";
 import { Button } from "@/components/os/ui/Button";
@@ -25,9 +25,11 @@ const TIMELINES = [
     'Immediate', '1–2 weeks', '1 month', 'Flexible'
 ];
 
-export default function CreateLeadPage() {
+export default function EditLeadPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params);
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [fetching, setFetching] = useState(true);
     const [lookupLoading, setLookupLoading] = useState(false);
     const [clientIdInput, setClientIdInput] = useState('');
     const [staffList, setStaffList] = useState<any[]>([]);
@@ -46,17 +48,44 @@ export default function CreateLeadPage() {
     });
 
     useEffect(() => {
-        const fetchStaff = async () => {
+        const fetchStaffAndLead = async () => {
             try {
+                // Fetch Staff
                 const res = await api.get('/users');
-                // Filter users to employees/admins who can take leads
                 setStaffList(res.data.filter((u: any) => u.role === 'admin' || u.role === 'employee'));
+
+                // Fetch Lead
+                const leadRes = await api.get(`/leads/${id}`);
+                const lead = leadRes.data;
+
+                setFormData({
+                    name: lead.name || '',
+                    email: lead.email || '',
+                    phone: lead.phone || '',
+                    source: lead.source || '',
+                    notes: lead.notes || '',
+                    serviceInterest: lead.serviceInterest || [],
+                    companyName: lead.companyName || '',
+                    budget: lead.budget || '',
+                    timeline: lead.timeline || '',
+                    internalNotes: lead.internalNotes || '',
+                    priority: lead.priority || 'Medium',
+                    existingClientId: lead.existingClientId || '',
+                    leadType: lead.leadType || 'Inbound',
+                    assignedTo: lead.assignedTo?._id || lead.assignedTo || '',
+                    referralId: lead.referralId || '',
+                    referralEmail: lead.referralEmail || '',
+                    referralPercentage: lead.referralPercentage || 0
+                });
             } catch (err) {
-                console.error("Could not fetch staff list", err);
+                console.error("Could not fetch data", err);
+                alert("Failed to load Lead Data");
+            } finally {
+                setFetching(false);
             }
         };
-        fetchStaff();
-    }, []);
+        fetchStaffAndLead();
+    }, [id]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -100,19 +129,21 @@ export default function CreateLeadPage() {
         try {
             const payload = { ...formData };
             if (!payload.assignedTo) delete (payload as any).assignedTo;
-            await api.post('/leads', payload);
-            router.push('/admin/leads');
+            await api.put(`/leads/${id}`, payload);
+            router.push(`/admin/leads/${id}`);
         } catch (error: any) {
-            console.error("Failed to create lead", error);
-            alert(`Failed to create lead: ${error.response?.data?.message || error.message}`);
+            console.error("Failed to update lead", error);
+            alert(`Failed to update lead: ${error.response?.data?.message || error.message}`);
         } finally {
             setLoading(false);
         }
     };
 
+    if (fetching) return <div className="p-8 text-center text-slate-500">Loading Lead details...</div>;
+
     return (
         <div className="space-y-6">
-            <PageHeader title="Create New Lead" description="Manually add a new lead to the system." />
+            <PageHeader title="Edit Lead" description="Modify details for this lead pipeline entry." />
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Main Info */}
@@ -130,7 +161,6 @@ export default function CreateLeadPage() {
                                     onBlur={(e) => handleLookup('clientId', e.target.value)}
                                     className="w-full h-10 rounded-md border border-purple-200 bg-purple-50 px-3 placeholder:text-purple-300"
                                 />
-                                <p className="text-xs text-slate-500">Enter ID to autofill details if this lead comes from an existing client.</p>
                             </div>
 
                             <hr className="border-dashed border-slate-200 my-4" />
@@ -183,7 +213,7 @@ export default function CreateLeadPage() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">Email</label>
-                                    <input name="email" value={formData.email} type="email" className="w-full h-10 rounded-md border border-slate-300 px-3" onChange={handleChange} onBlur={(e) => handleLookup('email', e.target.value)} placeholder="john@example.com" />
+                                    <input name="email" value={formData.email} type="email" className="w-full h-10 rounded-md border border-slate-300 px-3" onChange={handleChange} placeholder="john@example.com" />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">Phone</label>
@@ -198,7 +228,7 @@ export default function CreateLeadPage() {
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
                                 <label className="text-sm font-medium">Service Interest (Hold Ctrl to select multiple)</label>
-                                <select multiple name="serviceInterest" className="w-full h-32 rounded-md border border-slate-300 px-3 bg-white" onChange={handleMultiSelect}>
+                                <select multiple name="serviceInterest" value={formData.serviceInterest} className="w-full h-32 rounded-md border border-slate-300 px-3 bg-white" onChange={handleMultiSelect}>
                                     {SERVICE_INTERESTS.map(s => <option key={s} value={s}>{s}</option>)}
                                 </select>
                             </div>
@@ -230,8 +260,8 @@ export default function CreateLeadPage() {
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between">
                                     <label className="text-sm font-medium">Assign To Staff</label>
-                                    <a href="/admin/users/invite" className="text-xs text-blue-600 hover:underline">
-                                        Assign new role to staff using access control
+                                    <a href="/admin/users/invite" target="_blank" className="text-xs text-blue-600 hover:underline">
+                                        Assign new role to staff
                                     </a>
                                 </div>
                                 <select name="assignedTo" value={formData.assignedTo} className="w-full h-10 rounded-md border border-slate-300 px-3 bg-white" onChange={handleChange}>
@@ -249,7 +279,7 @@ export default function CreateLeadPage() {
                             </div>
                             <div className="space-y-2">
                                 <label className="text-sm font-medium">Internal Notes</label>
-                                <textarea name="internalNotes" value={formData.internalNotes} className="w-full h-24 rounded-md border border-slate-300 p-3 bg-white" placeholder="Admin assigned, initial thoughts..." onChange={handleChange} />
+                                <textarea name="internalNotes" value={formData.internalNotes} className="w-full h-24 rounded-md border border-slate-300 p-3 bg-white" onChange={handleChange} />
                             </div>
                         </CardContent>
                     </Card>
@@ -266,7 +296,7 @@ export default function CreateLeadPage() {
 
                     <div className="flex gap-2">
                         <Button type="button" variant="outline" className="w-full" onClick={() => router.back()}>Cancel</Button>
-                        <Button type="submit" isLoading={loading} className="w-full">Save Lead</Button>
+                        <Button type="submit" isLoading={loading} className="w-full">Save Changes</Button>
                     </div>
                 </div>
             </form>

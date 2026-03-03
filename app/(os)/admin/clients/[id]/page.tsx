@@ -41,7 +41,7 @@ export default function ClientDashboard() {
         <div className="space-y-6">
             <PageHeader
                 title={profile?.companyName || user.name}
-                description={`Client Dashboard • ID: ${user.clientId || user.username}`}
+                description={`Client Dashboard • ID: ${profile?.clientId || data?.clientId || user?.username || 'Unknown'}`}
             >
                 <div className="flex gap-2">
                     <Button variant="outline">Edit Profile</Button>
@@ -273,7 +273,7 @@ export default function ClientDashboard() {
                                             <tbody className="divide-y">
                                                 {sales.map((sale: any) => (
                                                     <tr key={sale._id}>
-                                                        <td className="p-3 font-medium">{sale.saleNumber || sale._id.slice(-6)}</td>
+                                                        <td className="p-3 font-medium">{sale.saleId || sale.saleNumber || sale._id.slice(-6)}</td>
                                                         <td className="p-3">{new Date(sale.createdAt).toLocaleDateString()}</td>
                                                         <td className="p-3">₹{sale.totalAmount.toLocaleString()}</td>
                                                         <td className="p-3 text-red-600">₹{sale.pendingAmount.toLocaleString()}</td>

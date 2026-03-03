@@ -14,7 +14,7 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
     const [isLoading, setIsLoading] = useState(false);
 
     // Data States
-    const [quoteNumber, setQuoteNumber] = useState('');
+    const [quotationId, setQuotationId] = useState('');
     const [lead, setLead] = useState<any>(null);
 
     const [currency, setCurrency] = useState('INR');
@@ -36,7 +36,7 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
             const quote = res.data.find((q: any) => q._id === id);
 
             if (quote) {
-                setQuoteNumber(quote.quoteNumber || quote._id.substring(quote._id.length - 6).toUpperCase());
+                setQuotationId(quote.quotationId || quote.quoteNumber || quote._id.substring(quote._id.length - 6).toUpperCase());
                 setLead(quote.leadId); // Assuming populated
                 setCurrency(quote.currency || 'INR');
                 setValidityDate(quote.validityDate ? new Date(quote.validityDate).toISOString().split('T')[0] : '');
@@ -144,7 +144,7 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
 
             <PageHeader
                 title="Edit Quotation"
-                description={`Reference: #${quoteNumber}`}
+                description={`Reference: #${quotationId}`}
             >
                 <div className="flex gap-2">
                     <select
