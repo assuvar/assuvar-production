@@ -13,7 +13,7 @@ async function handleRequest(request: Request, path: string[], method: string) {
             return NextResponse.json({ message: 'Unauthorized: No session token.' }, { status: 401 });
         }
 
-        const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000/api';
 
         const fetchOptions: RequestInit = {
             method,

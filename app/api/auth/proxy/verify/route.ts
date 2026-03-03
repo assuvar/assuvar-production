@@ -6,7 +6,7 @@ export async function POST(request: Request) {
         const { email, username, code } = body;
 
         // Proxy to Backend
-        const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000/api';
         const res = await fetch(`${backendUrl}/auth/verify`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
