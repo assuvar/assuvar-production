@@ -1,7 +1,8 @@
 export interface NavigationItem {
     name: string;
     href: string;
-    icon: string; // Changed from component to string identifier
+    icon: string;
+    children?: NavigationItem[];
 }
 
 export const adminNavigation: NavigationItem[] = [
@@ -14,7 +15,17 @@ export const adminNavigation: NavigationItem[] = [
     { name: 'Payroll', href: '/admin/payroll', icon: 'DollarSign' },
     { name: 'Marketing', href: '/admin/marketing', icon: 'Megaphone' },
     { name: 'Documents', href: '/admin/documents', icon: 'BookOpen' },
-    { name: 'Access Control', href: '/admin/users/invite', icon: 'ShieldCheck' },
+    {
+        name: 'Access Control',
+        href: '/admin/users',
+        icon: 'ShieldCheck',
+        children: [
+            { name: 'Invitation', href: '/admin/users/invite', icon: 'ShieldCheck' },
+            { name: 'Added Clients', href: '/admin/users/clients-list', icon: 'Users' },
+            { name: 'Added Employees', href: '/admin/users/employees-list', icon: 'Users' },
+            { name: 'Added Partners', href: '/admin/users/partners-list', icon: 'Handshake' },
+        ]
+    },
 ];
 
 export const partnerNavigation: NavigationItem[] = [
@@ -29,4 +40,8 @@ export const clientNavigation: NavigationItem[] = [
     { name: 'Projects', href: '/client/projects', icon: 'Briefcase' },
     { name: 'Payments', href: '/client/payments', icon: 'CreditCard' },
     { name: 'Documents', href: '/client/documents', icon: 'BookOpen' },
+];
+
+export const employeeNavigation: NavigationItem[] = [
+    { name: 'Dashboard', href: '/employee/dashboard', icon: 'LayoutDashboard' },
 ];

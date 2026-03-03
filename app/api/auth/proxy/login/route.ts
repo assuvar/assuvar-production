@@ -3,14 +3,20 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { email, password } = body;
+        const { email, username, password, otp, turnstileToken } = body;
 
         // Proxy to Backend
-        const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000/api';
         const res = await fetch(`${backendUrl}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password }),
+            body: JSON.stringify({
+                email: email || username,
+                username: username || email,
+                password,
+                otp,
+                turnstileToken
+            }),
         });
 
         if (!res.ok) {

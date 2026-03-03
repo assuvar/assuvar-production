@@ -96,7 +96,7 @@ export default function InviteUserPage() {
         <div className="space-y-6 max-w-2xl mx-auto">
             <PageHeader
                 title="Invite New User"
-                description="Send an automated email invitation with secure credentials."
+                description="Send an automated email invitation with a secure verification code."
             />
 
             <Card>

@@ -10,6 +10,8 @@ export const metadata: Metadata = {
     description: "Unified Internal Operating System",
 };
 
+import { Toaster } from 'sonner';
+
 export default function OSLayout({
     children,
 }: Readonly<{
@@ -18,6 +20,7 @@ export default function OSLayout({
     return (
         <html lang="en">
             <body className={`${inter.variable} ${spaceGrotesk.variable} antialiased bg-structura-light text-structura-black font-sans`}>
+                <Toaster richColors position="top-right" />
                 {children}
             </body>
         </html>

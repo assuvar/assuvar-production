@@ -35,3 +35,11 @@ export function CardContent({ children, className, ...props }: CardProps) {
         </div>
     );
 }
+
+export function CardFooter({ children, className, ...props }: CardProps) {
+    return (
+        <div className={cn("px-6 py-4 border-t border-structura-border", className)} {...props}>
+            {children}
+        </div>
+    );
+}

@@ -1,8 +1,28 @@
 'use client';
 
 import { Bell, Search, User } from 'lucide-react';
+import Cookies from 'js-cookie';
+import { useState, useEffect } from 'react';
 
 export default function TopBar() {
+    const [userInfo, setUserInfo] = useState<{ name?: string, role?: string } | null>(null);
+
+    useEffect(() => {
+        const info = Cookies.get('user_info');
+        if (info) {
+            try {
+                setUserInfo(JSON.parse(info));
+            } catch (e) {
+                console.error('Failed to parse user_info cookie', e);
+            }
+        }
+    }, []);
+
+    const displayName = userInfo?.name || 'Admin User';
+    const displayRole = userInfo?.role
+        ? userInfo.role.charAt(0).toUpperCase() + userInfo.role.slice(1)
+        : 'Super Admin';
+
     return (
         <header className="flex h-16 items-center justify-between border-b border-structura-border bg-white px-6">
             {/* Left: Breadcrumbs / Context */}
@@ -30,8 +50,8 @@ export default function TopBar() {
 
                 <div className="flex items-center gap-3">
                     <div className="flex flex-col items-end">
-                        <span className="text-sm font-medium text-structura-black">Admin User</span>
-                        <span className="text-xs text-slate-500">Super Admin</span>
+                        <span className="text-sm font-medium text-structura-black">{displayName}</span>
+                        <span className="text-xs text-slate-500">{displayRole}</span>
                     </div>
                     <div className="h-10 w-10 rounded-full bg-structura-light border border-structura-border flex items-center justify-center">
                         <User className="h-5 w-5 text-slate-600" />

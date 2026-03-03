@@ -74,6 +74,13 @@ export default function ClientsPage() {
                                     <TableCell>{client.contactPerson}</TableCell>
                                     <TableCell>{client.email}</TableCell>
                                     <TableCell>
+                                        {!client.userId ? (
+                                            <StatusBadge status="Pending" type="neutral" />
+                                        ) : client.userId.isFirstLogin ? (
+                                            <StatusBadge status="Invited" type="neutral" />
+                                        ) : (
+                                            <StatusBadge status="Verified" type="success" />
+                                        )}
                                         <StatusBadge status={client.portalAccess ? 'Active' : 'Pending Login'} />
                                     </TableCell>
                                     <TableCell className="text-right">
