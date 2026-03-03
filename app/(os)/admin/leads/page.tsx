@@ -393,6 +393,12 @@ function LeadsContent() {
                                                     <Button size="sm" variant="outline" disabled className="text-xs py-1 h-8 border-slate-200 text-slate-400 opacity-60">
                                                         <FileText className="mr-1.5 h-3.5 w-3.5" /> Quote
                                                     </Button>
+                                                ) : lead.status === 'quoted' || lead.quoteId ? (
+                                                    <Link href={`/admin/quotes/${lead.quoteId?._id || lead.quoteId}/edit`} onClick={(e) => e.stopPropagation()}>
+                                                        <Button size="sm" variant="outline" className="text-xs py-1 h-8 border-indigo-200 text-indigo-600 hover:bg-indigo-50 transition-opacity">
+                                                            <FileText className="mr-1.5 h-3.5 w-3.5" /> Quote (R)
+                                                        </Button>
+                                                    </Link>
                                                 ) : (
                                                     <Link href={`/admin/quotes/create?leadId=${lead._id}`} onClick={(e) => e.stopPropagation()}>
                                                         <Button size="sm" variant="outline" className="text-xs py-1 h-8 border-purple-200 text-purple-600 hover:bg-purple-50 transition-opacity">
