@@ -8,7 +8,7 @@ const intlMiddleware = createMiddleware(routing);
 
 // 2. Define Admin/Protected Routes
 const ADMIN_ROUTES = ['/admin', '/client', '/partner', '/employee'];
-const AUTH_ROUTES = ['/login'];
+const AUTH_ROUTES = ['/login', '/verify', '/forgot-password'];
 
 export default function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;

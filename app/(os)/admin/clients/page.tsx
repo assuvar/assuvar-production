@@ -74,7 +74,13 @@ export default function ClientsPage() {
                                     <TableCell>{client.contactPerson}</TableCell>
                                     <TableCell>{client.email}</TableCell>
                                     <TableCell>
-                                        <StatusBadge status={client.userId ? 'active' : 'pending'} type={client.userId ? 'success' : 'neutral'} />
+                                        {!client.userId ? (
+                                            <StatusBadge status="Pending" type="neutral" />
+                                        ) : client.userId.isFirstLogin ? (
+                                            <StatusBadge status="Invited" type="neutral" />
+                                        ) : (
+                                            <StatusBadge status="Verified" type="success" />
+                                        )}
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <Link href={`/admin/clients/${client._id}`}>

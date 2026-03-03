@@ -59,12 +59,12 @@ export default function AdminLoginPage() {
                         </div>
                     )}
                     <div className="space-y-1.5">
-                        <label className="text-sm font-medium text-structura-black">Email Address</label>
+                        <label className="text-sm font-medium text-structura-black">Email or Username</label>
                         <div className="relative">
                             <Mail className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                             <input
-                                type="email"
-                                placeholder="admin@assuvar.com"
+                                type="text"
+                                placeholder="admin@assuvar.com or username"
                                 className="h-10 w-full rounded-lg border border-structura-border pl-10 pr-4 text-sm focus:border-structura-blue focus:outline-none focus:ring-1 focus:ring-structura-blue bg-white"
                                 required
                                 value={email}

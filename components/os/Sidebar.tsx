@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
     LayoutDashboard,
     Users,
@@ -14,10 +14,13 @@ import {
     BookOpen,
     Settings,
     LogOut,
-    LucideIcon
+    LucideIcon,
+    Handshake,
+    ChevronDown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 import { NavigationItem } from '@/config/navigation';
 
 interface SidebarProps {
@@ -34,11 +37,34 @@ const iconMap: Record<string, LucideIcon> = {
     ShieldCheck,
     Megaphone,
     BookOpen,
-    Settings
+    Settings,
+    Handshake
 };
 
 export default function Sidebar({ items }: SidebarProps) {
     const pathname = usePathname();
+    const router = useRouter();
+    const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
+
+    // Auto-expand menu if child is active
+    useEffect(() => {
+        items.forEach(item => {
+            if (item.children?.some(child => pathname === child.href)) {
+                setExpandedItems(prev => ({ ...prev, [item.name]: true }));
+            }
+        });
+    }, [pathname, items]);
+
+    const handleLogout = async () => {
+        try {
+            await fetch('/api/auth/logout', { method: 'POST' });
+            // Redirect to login (assuming /login exists, otherwise fallback to root)
+            router.push('/login');
+            router.refresh();
+        } catch (error) {
+            console.error('Failed to logout:', error);
+        }
+    };
 
     return (
         <div className="flex h-full w-64 flex-col border-r border-structura-border bg-white">
@@ -59,30 +85,82 @@ export default function Sidebar({ items }: SidebarProps) {
             {/* Navigation */}
             <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
                 {items.map((item) => {
-                    const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
-                    const Icon = iconMap[item.icon] || LayoutDashboard; // Fallback icon
+                    const hasChildren = item.children && item.children.length > 0;
+                    const isActive = pathname === item.href || (item.children?.some(child => pathname === child.href));
+                    const isChildActive = item.children?.some(child => pathname === child.href);
+                    const Icon = iconMap[item.icon] || LayoutDashboard;
 
                     return (
-                        <Link
-                            key={item.name}
-                            href={item.href}
-                            className={cn(
-                                'group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
-                                isActive
-                                    ? 'bg-structura-blue/10 text-structura-blue'
-                                    : 'text-slate-600 hover:bg-slate-50 hover:text-structura-black'
+                        <div key={item.name} className="space-y-1">
+                            {hasChildren ? (
+                                <>
+                                    <button
+                                        onClick={() => {
+                                            const newState = !expandedItems[item.name];
+                                            setExpandedItems(prev => ({ ...prev, [item.name]: newState }));
+                                        }}
+                                        className={cn(
+                                            'group flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
+                                            isActive || isChildActive
+                                                ? 'bg-structura-blue/5 text-structura-blue'
+                                                : 'text-slate-600 hover:bg-slate-50 hover:text-structura-black'
+                                        )}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <Icon className={cn("h-5 w-5", (isActive || isChildActive) ? "text-structura-blue" : "text-slate-500 group-hover:text-structura-black")} />
+                                            {item.name}
+                                        </div>
+                                        <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", expandedItems[item.name] ? "rotate-180" : "")} />
+                                    </button>
+                                    {expandedItems[item.name] && (
+                                        <div className="mt-1 ml-4 space-y-1 border-l border-slate-100 pl-4">
+                                            {item.children?.map((child) => {
+                                                const isSubActive = pathname === child.href;
+                                                const SubIcon = iconMap[child.icon] || Icon;
+                                                return (
+                                                    <Link
+                                                        key={child.name}
+                                                        href={child.href}
+                                                        className={cn(
+                                                            'flex items-center gap-3 rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-200',
+                                                            isSubActive
+                                                                ? 'text-structura-blue bg-structura-blue/5'
+                                                                : 'text-slate-500 hover:text-structura-black hover:bg-slate-50'
+                                                        )}
+                                                    >
+                                                        <SubIcon className="h-3.5 w-3.5" />
+                                                        {child.name}
+                                                    </Link>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </>
+                            ) : (
+                                <Link
+                                    href={item.href}
+                                    className={cn(
+                                        'group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
+                                        isActive
+                                            ? 'bg-structura-blue/10 text-structura-blue'
+                                            : 'text-slate-600 hover:bg-slate-50 hover:text-structura-black'
+                                    )}
+                                >
+                                    <Icon className={cn("h-5 w-5", isActive ? "text-structura-blue" : "text-slate-500 group-hover:text-structura-black")} />
+                                    {item.name}
+                                </Link>
                             )}
-                        >
-                            <Icon className={cn("h-5 w-5", isActive ? "text-structura-blue" : "text-slate-500 group-hover:text-structura-black")} />
-                            {item.name}
-                        </Link>
+                        </div>
                     );
                 })}
             </nav>
 
             {/* User / Logout */}
             <div className="border-t border-structura-border p-4">
-                <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-red-600 transition-colors">
+                <button
+                    onClick={handleLogout}
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-red-600 transition-colors"
+                >
                     <LogOut className="h-5 w-5" />
                     Sign Out
                 </button>

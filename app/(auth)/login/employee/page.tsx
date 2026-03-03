@@ -4,14 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/os/ui/Car
 import { Button } from "@/components/os/ui/Button";
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Mail, ShieldCheck, ArrowRight, UserCheck } from "lucide-react";
+import { Mail, ShieldCheck, ArrowRight, Briefcase } from "lucide-react";
 import axios from "axios";
 import { toast } from "sonner";
 import { Turnstile } from '@marsidev/react-turnstile';
 
-export default function LoginPage() {
-    const router = useRouter();
+export default function EmployeeLoginPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [identifier, setIdentifier] = useState('');
@@ -39,8 +37,8 @@ export default function LoginPage() {
             toast.success("OTP sent to your email!");
         } catch (err: any) {
             if (err.response?.status === 403) {
-                setError("Account not verified. Please verify using the invitation code first.");
-                toast.error("Verification required");
+                setError("Employee account not active. Please use the activation link from your workspace invitation.");
+                toast.error("Activation required");
             } else {
                 const msg = err.response?.data?.message || 'Failed to send OTP. Please check your credentials.';
                 setError(msg);
@@ -64,14 +62,15 @@ export default function LoginPage() {
             });
 
             const { user } = res.data;
-            toast.success("Welcome back!");
 
-            // Redirect based on role
-            if (user.role === 'admin') window.location.href = '/admin';
-            else if (user.role === 'client') window.location.href = '/client';
-            else if (user.role === 'employee') window.location.href = '/employee';
-            else if (user.role === 'partner') window.location.href = '/partner';
-            else window.location.href = '/';
+            if (user.role !== 'employee' && user.role !== 'admin') {
+                setError('This login is for employees only.');
+                setIsLoading(false);
+                return;
+            }
+
+            toast.success("Welcome, Team!");
+            window.location.href = '/employee/dashboard';
 
         } catch (err: any) {
             const msg = err.response?.data?.message || 'Login failed. Please check your code.';
@@ -85,9 +84,14 @@ export default function LoginPage() {
     return (
         <Card className="border-structura-border/60 shadow-xl backdrop-blur-sm bg-white/80">
             <CardHeader className="text-center pb-2">
-                <CardTitle>{step === 'identifier' ? 'Sign In' : 'Account Access'}</CardTitle>
+                <div className="flex justify-center mb-2">
+                    <div className="p-2 bg-indigo-50 rounded-full">
+                        <Briefcase className="h-6 w-6 text-indigo-600" />
+                    </div>
+                </div>
+                <CardTitle>{step === 'identifier' ? 'Employee Login' : 'Team Access'}</CardTitle>
                 <p className="text-sm text-slate-500 mt-1">
-                    {step === 'identifier' ? 'Enter your email/username to receive a login code' : 'Enter the code sent to your email'}
+                    {step === 'identifier' ? 'Enter your employee identifier to receive a login code' : 'Enter the code sent to your email'}
                 </p>
             </CardHeader>
             <CardContent>
@@ -96,21 +100,21 @@ export default function LoginPage() {
                         {error && (
                             <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md border border-red-100 flex flex-col gap-2">
                                 <span className="italic">{error}</span>
-                                {error.includes('verify') && (
-                                    <Link href="/verify" className="text-xs font-bold underline flex items-center">
+                                {error.toLowerCase().includes('active') && (
+                                    <Link href="/verify/employee" className="text-xs font-bold underline flex items-center">
                                         Go to Activation Page <ArrowRight className="ml-1 h-3 w-3" />
                                     </Link>
                                 )}
                             </div>
                         )}
                         <div className="space-y-1.5">
-                            <label className="text-sm font-medium text-structura-black">Email or Username</label>
+                            <label className="text-sm font-medium text-slate-700">Workspace Email or ID</label>
                             <div className="relative">
                                 <Mail className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                                 <input
                                     type="text"
-                                    placeholder="Email or Username"
-                                    className="h-10 w-full rounded-lg border border-structura-border pl-10 pr-4 text-sm focus:border-structura-blue focus:outline-none focus:ring-1 focus:ring-structura-blue bg-white"
+                                    placeholder="Enter your email"
+                                    className="h-10 w-full rounded-lg border border-slate-200 pl-10 pr-4 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white"
                                     required
                                     value={identifier}
                                     onChange={(e) => setIdentifier(e.target.value)}
@@ -120,10 +124,10 @@ export default function LoginPage() {
 
                         <Button
                             type="submit"
-                            className="w-full"
+                            className="w-full bg-indigo-600 hover:bg-indigo-700"
                             isLoading={isLoading}
                         >
-                            Get Login Code <ArrowRight className="ml-2 h-4 w-4" />
+                            Get Security Code <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
 
                         {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
@@ -135,10 +139,8 @@ export default function LoginPage() {
                             </div>
                         )}
 
-                        <div className="pt-2 text-center">
-                            <Link href="/verify" className="text-xs text-slate-500 hover:text-structura-blue flex items-center justify-center">
-                                <UserCheck className="mr-1.5 h-3 w-3" /> First time inviting? Activate here
-                            </Link>
+                        <div className="pt-2 text-center text-xs text-slate-400 font-medium">
+                            Assuvar Workspace Access
                         </div>
                     </form>
                 ) : (
@@ -149,14 +151,14 @@ export default function LoginPage() {
                             </div>
                         )}
                         <div className="space-y-1.5">
-                            <label className="text-sm font-medium text-structura-black">Enter OTP Code</label>
+                            <label className="text-sm font-medium text-slate-700">Verification Code</label>
                             <div className="relative">
                                 <ShieldCheck className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                                 <input
                                     type="text"
                                     placeholder="••••••"
                                     maxLength={6}
-                                    className="h-10 w-full rounded-lg border border-structura-border pl-10 pr-4 text-sm focus:border-structura-blue focus:outline-none focus:ring-1 focus:ring-structura-blue bg-white tracking-[0.5em] font-bold text-center"
+                                    className="h-10 w-full rounded-lg border border-slate-200 pl-10 pr-4 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white tracking-[0.5em] font-bold text-center"
                                     required
                                     value={otp}
                                     onChange={(e) => setOtp(e.target.value)}
@@ -166,18 +168,18 @@ export default function LoginPage() {
 
                         <Button
                             type="submit"
-                            className="w-full"
+                            className="w-full bg-indigo-600 hover:bg-indigo-700"
                             isLoading={isLoading}
                         >
-                            Sign In to Portal
+                            Log in to Workspace
                         </Button>
 
                         <button
                             type="button"
                             onClick={() => setStep('identifier')}
-                            className="w-full text-xs text-slate-500 hover:text-structura-blue transition-colors"
+                            className="w-full text-xs text-slate-500 hover:text-indigo-600 transition-colors"
                         >
-                            Back to email entry
+                            Back to identifier entry
                         </button>
                     </form>
                 )}
