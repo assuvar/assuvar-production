@@ -9,6 +9,7 @@ import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@
 import { StatusBadge } from "@/components/os/ui/StatusBadge";
 import { useEffect, useState } from "react";
 import api from '@/lib/axios';
+import { formatDate } from '@/lib/utils';
 
 export default function ProjectsPage() {
     const [projects, setProjects] = useState<any[]>([]);
@@ -72,7 +73,7 @@ export default function ProjectsPage() {
                                         <StatusBadge status={project.status} />
                                     </TableCell>
                                     <TableCell>
-                                        {project.endDate ? new Date(project.endDate).toLocaleDateString() : '-'}
+                                        {project.endDate ? formatDate(project.endDate) : '-'}
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <Link href={`/admin/projects/${project._id}`}>

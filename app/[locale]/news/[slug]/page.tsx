@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { Calendar, ArrowLeft } from 'lucide-react';
 import { Link } from '@/src/i18n/navigation';
+import { formatDate } from '@/lib/utils';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }) {
     const { locale, slug } = await params;
@@ -50,7 +51,7 @@ export default async function NewsPost({ params }: { params: Promise<{ locale: s
                             <div className="absolute bottom-6 left-6 md:bottom-10 md:left-10 text-white">
                                 <div className="flex items-center gap-2 text-sm font-mono opacity-80 mb-2">
                                     <Calendar className="w-4 h-4" />
-                                    {new Date(post.date).toLocaleDateString(locale)}
+                                    {formatDate(post.date)}
                                 </div>
                                 <h1 className="text-3xl md:text-5xl font-bold leading-tight max-w-2xl">
                                     {title}

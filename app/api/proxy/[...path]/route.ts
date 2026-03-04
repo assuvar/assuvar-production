@@ -62,6 +62,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ pa
     return handleRequest(request, path, 'PATCH');
 }
 
+export async function PUT(request: Request, { params }: { params: Promise<{ path: string[] }> }) {
+    const { path } = await params;
+    return handleRequest(request, path, 'PUT');
+}
+
 export async function DELETE(request: Request, { params }: { params: Promise<{ path: string[] }> }) {
     const { path } = await params;
     return handleRequest(request, path, 'DELETE');

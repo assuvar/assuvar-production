@@ -6,6 +6,7 @@ import { Button } from '@/components/os/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/os/ui/Card';
 import { StatusBadge } from '@/components/os/ui/StatusBadge';
 import api from '@/lib/axios';
+import { formatDate } from '@/lib/utils';
 
 export default function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
@@ -134,7 +135,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                                             <div>
                                                 <p className="font-medium">{task.name}</p>
                                                 <p className="text-sm text-slate-500">Assigned: {task.employeeId?.name || task.employeeId}</p>
-                                                <p className="text-xs text-slate-400">Due: {new Date(task.deadline).toLocaleDateString()}</p>
+                                                <p className="text-xs text-slate-400">Due: {formatDate(task.deadline)}</p>
                                             </div>
                                             <div className="text-right">
                                                 <StatusBadge status={task.status} />

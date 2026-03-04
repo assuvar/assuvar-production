@@ -7,6 +7,7 @@ import { Button } from '@/components/os/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/os/ui/Card';
 import { StatusBadge } from '@/components/os/ui/StatusBadge';
 import api from '@/lib/axios';
+import { formatDate } from '@/lib/utils';
 
 export default function EmployeeDashboard() {
     const [tasks, setTasks] = useState<any[]>([]);
@@ -87,7 +88,7 @@ export default function EmployeeDashboard() {
                                         <p className="text-sm text-slate-500 mb-1">{task.description}</p>
                                         <div className="flex gap-4 text-xs text-slate-400">
                                             <span>Project: {task.projectId?.name || 'Unknown'}</span>
-                                            <span>Due: {new Date(task.deadline).toLocaleDateString()}</span>
+                                            <span>Due: {formatDate(task.deadline)}</span>
                                             <span className="font-medium text-slate-600">Est. Payout: ${task.salary}</span>
                                         </div>
                                     </div>

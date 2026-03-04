@@ -6,6 +6,7 @@ import { StatusBadge } from '@/components/os/ui/StatusBadge';
 import { useEffect, useState } from 'react';
 import api from '@/lib/axios';
 import { useRouter } from 'next/navigation';
+import { ClockTimePicker } from '@/components/os/ui/ClockTimePicker';
 
 export function LeadViewModal({ leadId, onClose, onUpdate }: { leadId: string, onClose: () => void, onUpdate?: () => void }) {
     const router = useRouter();
@@ -221,7 +222,7 @@ export function LeadViewModal({ leadId, onClose, onUpdate }: { leadId: string, o
                             </div>
                             <div>
                                 <label className="text-sm font-medium mb-1 block text-slate-700">Time *</label>
-                                <input type="time" className="w-full border rounded-lg p-2" value={followUpTime} onChange={e => setFollowUpTime(e.target.value)} />
+                                <ClockTimePicker value={followUpTime} onChange={setFollowUpTime} placeholder="Select time..." />
                             </div>
                             <div>
                                 <label className="text-sm font-medium mb-1 block text-slate-700">Note (Optional)</label>

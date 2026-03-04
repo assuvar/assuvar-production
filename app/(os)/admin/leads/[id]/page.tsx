@@ -10,6 +10,7 @@ import { use, useEffect, useState } from 'react';
 import api from '@/lib/axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { ClockTimePicker } from '@/components/os/ui/ClockTimePicker';
 
 export default function LeadDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
@@ -354,7 +355,7 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
                             </div>
                             <div>
                                 <label className="text-sm font-medium mb-1 block text-slate-700">Time</label>
-                                <input type="time" className="w-full border rounded-lg p-2" value={followUpTime} onChange={e => setFollowUpTime(e.target.value)} />
+                                <ClockTimePicker value={followUpTime} onChange={setFollowUpTime} placeholder="Select time..." />
                             </div>
                             <div>
                                 <label className="text-sm font-medium mb-1 block text-slate-700">Note (Optional)</label>

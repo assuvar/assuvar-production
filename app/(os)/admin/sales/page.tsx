@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { Plus, Search, Filter, FileText, CheckCircle, Clock, Mail, Eye } from "lucide-react";
+import { Plus, Search, Filter, FileText, ReceiptText, CheckCircle, Clock, Mail, Eye as View } from "lucide-react";
 import { PageHeader } from "@/components/os/ui/PageHeader";
 import { Button } from "@/components/os/ui/Button";
 import { Card } from "@/components/os/ui/Card";
@@ -109,14 +109,17 @@ export default function SalesPage() {
                                                     }
                                                 }}
                                                 className="text-slate-600 hover:text-orange-600 hover:bg-orange-50 px-2"
+                                                disabled={sale.paymentStatus !== 'paid'}
+                                                title="Email Final Invoice"
                                             >
                                                 <Mail className="h-4 w-4" />
                                             </Button>
 
                                             <Button
-                                                variant="outline" size="sm"
+                                                variant="outline" size="sm" title="Final Invoice"
                                                 onClick={() => window.open(`${process.env.NEXT_PUBLIC_API_URL}/sales/${sale._id}/invoice`, '_blank')}
                                                 className="text-slate-600 hover:text-purple-600 hover:bg-purple-50 px-2"
+                                                disabled={sale.paymentStatus !== 'paid'}
                                             >
                                                 <FileText className="h-4 w-4" />
                                             </Button>

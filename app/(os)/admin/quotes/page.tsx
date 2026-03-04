@@ -1,8 +1,10 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import api from '@/lib/axios';
 import { PageHeader } from '@/components/os/ui/PageHeader';
 import { Button } from '@/components/os/ui/Button';
-import { Plus, Pencil, Trash2, Copy, Eye, Mail, Filter, Search, CheckCircle2, XCircle } from 'lucide-react';
+import { Plus, Pencil, Trash2, Copy, Eye, Mail, Filter, Search, CheckCircle2, XCircle, RefreshCcw } from 'lucide-react';
 import Link from 'next/link';
 import {
     Table,
@@ -14,16 +16,16 @@ import {
 } from '@/components/os/ui/Table';
 import { StatusBadge } from '@/components/os/ui/StatusBadge';
 import { useRouter } from 'next/navigation';
-import { cn } from '@/lib/utils';
+import { cn, formatDate } from '@/lib/utils';
 import { Card } from '@/components/os/ui/Card';
 
-const TABS = ['Drafts', 'Sent', 'Accepted', 'Rejected', 'All'];
+const TABS = ['All', 'Drafts', 'Sent', 'Accepted', 'Rejected'];
 
 export default function QuotesPage() {
     const [allQuotes, setAllQuotes] = useState<any[]>([]);
     const [filteredQuotes, setFilteredQuotes] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('Drafts');
+    const [activeTab, setActiveTab] = useState('All');
     const router = useRouter();
 
     const [searchTerm, setSearchTerm] = useState('');
@@ -169,7 +171,7 @@ export default function QuotesPage() {
                                             <div className="font-medium">{quote.leadId?.name || 'Deleted Lead'}</div>
                                             <div className="text-[10px] text-slate-400">{quote.leadId?.email}</div>
                                         </TableCell>
-                                        <TableCell className="text-xs text-slate-500">{new Date(quote.createdAt).toLocaleDateString()}</TableCell>
+                                        <TableCell className="text-xs text-slate-500">{formatDate(quote.createdAt)}</TableCell>
                                         <TableCell className="font-bold text-blue-700">
                                             {quote.currency} {quote.grandTotal?.toLocaleString()}
                                         </TableCell>
@@ -181,10 +183,10 @@ export default function QuotesPage() {
                                                 {/* Accept/Reject (Staff Only) */}
                                                 {['sent'].includes(quote.status) && (
                                                     <>
-                                                        <Button size="sm" variant="outline" className="h-8 border-emerald-200 text-emerald-600 hover:bg-emerald-50 px-2" onClick={() => handleAction(quote._id, 'accept', 'Accept')}>
+                                                        <Button size="sm" variant="outline" title="Accept Manually" className="h-8 border-emerald-200 text-emerald-600 hover:bg-emerald-50 px-2" onClick={() => handleAction(quote._id, 'accept', 'Accept')}>
                                                             <CheckCircle2 className="h-3.5 w-3.5" />
                                                         </Button>
-                                                        <Button size="sm" variant="outline" className="h-8 border-red-200 text-red-600 hover:bg-red-50 px-2" onClick={() => handleAction(quote._id, 'reject', 'Reject')}>
+                                                        <Button size="sm" variant="outline" title="Reject Manually" className="h-8 border-red-200 text-red-600 hover:bg-red-50 px-2" onClick={() => handleAction(quote._id, 'reject', 'Reject')}>
                                                             <XCircle className="h-3.5 w-3.5" />
                                                         </Button>
                                                     </>
@@ -197,6 +199,47 @@ export default function QuotesPage() {
                                                 >
                                                     <Eye className="h-4 w-4 mr-2" /> View
                                                 </Button>
+
+                                                {['draft', 'sent'].includes(quote.status) && (
+                                                    <Button
+                                                        variant="outline" size="sm"
+                                                        className="h-8 border-slate-200 text-slate-600 px-3 hover:text-blue-600 hover:bg-blue-50"
+                                                        onClick={async () => {
+                                                            if (confirm('Send this quotation to the client via email?')) {
+                                                                try {
+                                                                    await api.post(`/quotes/${quote._id}/send`);
+                                                                    alert('Email sent successfully!');
+                                                                    fetchQuotes();
+                                                                } catch (err: any) {
+                                                                    alert(err.response?.data?.message || 'Failed to send email');
+                                                                }
+                                                            }
+                                                        }}
+                                                    >
+                                                        <Mail className="h-3.5 w-3.5 mr-2" /> Email Client
+                                                    </Button>
+                                                )}
+
+                                                {['accepted'].includes(quote.status) && !quote.isConverted && (
+                                                    <Button
+                                                        variant="outline" size="sm"
+                                                        className="h-8 border-emerald-200 text-emerald-700 font-bold px-3 hover:text-emerald-800 hover:bg-emerald-50 bg-emerald-50/50"
+                                                        onClick={async () => {
+                                                            if (confirm('Convert this quotation into an active Sale?')) {
+                                                                try {
+                                                                    await api.post(`/sales/convert`, { quoteId: quote._id });
+                                                                    alert('Successfully converted to Sale! You can now view it under Sales.');
+                                                                    // We keep it as accepted, just let them know it's done. 
+                                                                    // If backend prevents multiple conversions, it will return an error correctly.
+                                                                } catch (err: any) {
+                                                                    alert(err.response?.data?.message || 'Failed to convert to Sale');
+                                                                }
+                                                            }
+                                                        }}
+                                                    >
+                                                        <RefreshCcw className="h-3.5 w-3.5 mr-2" /> Convert to Sale
+                                                    </Button>
+                                                )}
 
                                                 {['draft', 'sent'].includes(quote.status) && (
                                                     <Button

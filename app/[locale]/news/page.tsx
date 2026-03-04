@@ -3,6 +3,7 @@ import { Link } from '@/src/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import { ArrowRight, Calendar } from 'lucide-react';
+import { formatDate } from '@/lib/utils';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
@@ -50,7 +51,7 @@ export default async function NewsIndex({ params }: { params: Promise<{ locale: 
                                     <div className="flex items-center gap-3 mb-3">
                                         <span className="text-xs font-mono text-slate-500 flex items-center gap-1">
                                             <Calendar className="w-3 h-3" />
-                                            {new Date(post.date).toLocaleDateString(locale)}
+                                            {formatDate(post.date)}
                                         </span>
                                         {post.highlight && (
                                             <span className="px-2 py-0.5 rounded bg-structura-blue/10 text-structura-blue text-[10px] font-bold uppercase tracking-wider">

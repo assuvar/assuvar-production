@@ -12,6 +12,7 @@ import api from '@/lib/axios';
 import { cn } from "@/lib/utils";
 import { LeadViewModal } from "@/components/os/crm/LeadViewModal";
 import { AddLeadModal } from "@/components/os/crm/AddLeadModal";
+import { ClockTimePicker } from "@/components/os/ui/ClockTimePicker";
 
 const TABS = ['All', 'New', 'Follow-Up', 'Quoted', 'Rejected'];
 
@@ -505,7 +506,7 @@ function LeadsContent() {
                             </div>
                             <div>
                                 <label className="text-sm font-medium mb-1 block text-slate-700">Time *</label>
-                                <input type="time" className="w-full border rounded-lg p-2" value={followUpTime} onChange={e => setFollowUpTime(e.target.value)} />
+                                <ClockTimePicker value={followUpTime} onChange={setFollowUpTime} placeholder="Select time..." />
                             </div>
                             <div>
                                 <label className="text-sm font-medium mb-1 block text-slate-700">Note (Optional)</label>
