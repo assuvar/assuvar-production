@@ -12,7 +12,7 @@ export const adminNavigation: NavigationItem[] = [
     { name: 'Quotations', href: '/admin/quotes', icon: 'FileText' },
     { name: 'Sales', href: '/admin/sales', icon: 'DollarSign' }, // Renamed from Sales & Quotes to avoid confusion, changed icon to DollarSign
     { name: 'Projects', href: '/admin/projects', icon: 'Briefcase' },
-    { name: 'Payroll', href: '/admin/payroll', icon: 'DollarSign' },
+    { name: 'Employee & Staffs', href: '/admin/payroll', icon: 'Users' },
     { name: 'Marketing', href: '/admin/marketing', icon: 'Megaphone' },
     { name: 'Documents', href: '/admin/documents', icon: 'BookOpen' },
     {

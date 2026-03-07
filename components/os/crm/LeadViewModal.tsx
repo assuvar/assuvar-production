@@ -1,6 +1,6 @@
 'use client';
 
-import { Building2, Mail, Phone, Tag, Pencil, MessageSquare, X } from 'lucide-react';
+import { Building2, Mail, Phone, Tag, Pencil, MessageSquare, X, PhoneCall, Ban, ThumbsUp, CheckSquare, FileText, Calendar } from 'lucide-react';
 import { Button } from '@/components/os/ui/Button';
 import { StatusBadge } from '@/components/os/ui/StatusBadge';
 import { useEffect, useState } from 'react';
@@ -102,7 +102,7 @@ export function LeadViewModal({ leadId, onClose, onUpdate }: { leadId: string, o
 
                 {/* Modal Body */}
                 <div className="p-6 overflow-y-auto">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
                         {/* LEFT COLUMN: Client Info */}
                         <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6 h-fit">
@@ -205,6 +205,132 @@ export function LeadViewModal({ leadId, onClose, onUpdate }: { leadId: string, o
                                     )) : <p className="text-sm text-slate-500 italic">No activity logged.</p>}
                                 </div>
                             </div>
+                        </div>
+
+                        {/* THIRD COLUMN: Quick Actions */}
+                        <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6 h-fit">
+                            <h3 className="text-lg font-bold">Actions</h3>
+
+                            <div className="space-y-3">
+                                {lead.status === 'new' && (
+                                    <>
+                                        <Button
+                                            className="w-full justify-start bg-blue-600 hover:bg-blue-700 text-white"
+                                            onClick={() => handleAction('Mark Contacted', 'mark-contacted')}
+                                        >
+                                            <PhoneCall className="mr-2 h-4 w-4" /> Mark Contacted
+                                        </Button>
+                                        <Button
+                                            className="w-full justify-start bg-red-100 text-red-700 hover:bg-red-200"
+                                            onClick={() => setShowNoteModal(true)}
+                                        >
+                                            <Ban className="mr-2 h-4 w-4" /> Reject
+                                        </Button>
+                                    </>
+                                )}
+
+                                {lead.status === 'contacted' && (
+                                    <>
+                                        <Button
+                                            className="w-full justify-start bg-orange-500 hover:bg-orange-600 text-white"
+                                            onClick={() => handleAction('Mark Interested', 'mark-interested')}
+                                        >
+                                            <ThumbsUp className="mr-2 h-4 w-4" /> Mark Interested
+                                        </Button>
+                                        <Button
+                                            className="w-full justify-start bg-yellow-100 hover:bg-yellow-200 text-yellow-800"
+                                            onClick={() => setShowFollowUpModal(true)}
+                                        >
+                                            <Calendar className="mr-2 h-4 w-4" /> Schedule Follow-Up
+                                        </Button>
+                                        <Button
+                                            className="w-full justify-start bg-red-100 text-red-700 hover:bg-red-200"
+                                            onClick={() => setShowNoteModal(true)}
+                                        >
+                                            <Ban className="mr-2 h-4 w-4" /> Reject
+                                        </Button>
+                                    </>
+                                )}
+
+                                {lead.status === 'follow_up' && (
+                                    <>
+                                        <Button
+                                            className="w-full justify-start bg-blue-600 hover:bg-blue-700 text-white"
+                                            onClick={() => handleAction('Mark Contacted', 'mark-contacted')}
+                                        >
+                                            <PhoneCall className="mr-2 h-4 w-4" /> Mark Contacted
+                                        </Button>
+                                        <Button
+                                            className="w-full justify-start bg-yellow-100 hover:bg-yellow-200 text-yellow-800"
+                                            onClick={() => setShowFollowUpModal(true)}
+                                        >
+                                            <Calendar className="mr-2 h-4 w-4" /> Reschedule
+                                        </Button>
+                                        <Button
+                                            className="w-full justify-start bg-red-100 text-red-700 hover:bg-red-200"
+                                            onClick={() => setShowNoteModal(true)}
+                                        >
+                                            <Ban className="mr-2 h-4 w-4" /> Reject
+                                        </Button>
+                                    </>
+                                )}
+
+                                {lead.status === 'interested' && (
+                                    <>
+                                        <Button
+                                            className="w-full justify-start bg-green-600 hover:bg-green-700 text-white"
+                                            onClick={() => handleAction('Accept Lead', 'accept')}
+                                        >
+                                            <CheckSquare className="mr-2 h-4 w-4" /> Accept
+                                        </Button>
+                                        <Button
+                                            className="w-full justify-start bg-red-100 text-red-700 hover:bg-red-200"
+                                            onClick={() => setShowNoteModal(true)}
+                                        >
+                                            <Ban className="mr-2 h-4 w-4" /> Reject
+                                        </Button>
+                                    </>
+                                )}
+
+                                {lead.status === 'accepted' && (
+                                    <>
+                                        <div className="text-center text-emerald-600 text-sm italic py-4">
+                                            This lead has been accepted.
+                                        </div>
+                                        <Button
+                                            disabled
+                                            className="w-full justify-start bg-slate-100 text-slate-400 opacity-60"
+                                        >
+                                            <FileText className="mr-2 h-4 w-4" /> Create Quotation
+                                        </Button>
+                                    </>
+                                )}
+
+                                {lead.status === 'rejected' && (
+                                    <>
+                                        <div className="text-center text-red-500 text-sm italic py-4">
+                                            This lead has been rejected.
+                                        </div>
+                                        <Button
+                                            variant="outline"
+                                            className="w-full"
+                                            onClick={() => setShowNoteModal(true)}
+                                        >
+                                            <MessageSquare className="mr-2 h-4 w-4" /> Add Note
+                                        </Button>
+                                    </>
+                                )}
+
+                                {lead.status === 'quoted' && (
+                                    <div className="text-center text-indigo-600 text-sm italic py-4 border border-indigo-100 rounded-lg bg-indigo-50/30">
+                                        Quotation has been generated.
+                                    </div>
+                                )}
+                            </div>
+
+                            <p className="text-[10px] text-slate-400 mt-4 italic">
+                                * Finalized leads (Accepted/Rejected) have limited actions to prevent data inconsistency.
+                            </p>
                         </div>
                     </div>
                 </div>

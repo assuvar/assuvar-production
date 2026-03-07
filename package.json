@@ -25,7 +25,8 @@
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",
     "sonner": "^2.0.7",
-    "tailwind-merge": "^3.4.0"
+    "tailwind-merge": "^3.4.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",

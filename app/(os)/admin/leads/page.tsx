@@ -2,7 +2,8 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import Link from "next/link";
-import { Plus, Search, Eye, FileText, FileCheck, PhoneCall, Calendar, CheckSquare, Ban, Trash2, Info, Tag } from "lucide-react";
+import * as XLSX from 'xlsx';
+import { Plus, Search, Eye, FileText, FileCheck, PhoneCall, Calendar, CheckSquare, Ban, Trash2, Info, Tag, Download, Check } from "lucide-react";
 import { PageHeader } from "@/components/os/ui/PageHeader";
 import { Button } from "@/components/os/ui/Button";
 import { Card } from "@/components/os/ui/Card";
@@ -26,6 +27,7 @@ function LeadsContent() {
     const [leads, setLeads] = useState<any[]>([]);
     const [filteredLeads, setFilteredLeads] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
 
     // Schedule Modal State
     const [showFollowUpModal, setShowFollowUpModal] = useState(false);
@@ -164,6 +166,55 @@ function LeadsContent() {
         }
     };
 
+    const handleSelectLead = (id: string) => {
+        setSelectedLeads(prev =>
+            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+        );
+    };
+
+    const handleSelectAll = () => {
+        if (selectedLeads.length === filteredLeads.length && filteredLeads.length > 0) {
+            setSelectedLeads([]);
+        } else {
+            setSelectedLeads(filteredLeads.map(l => l._id));
+        }
+    };
+
+    const exportToExcel = (mode: 'selected' | 'filtered') => {
+        const dataToExport = mode === 'selected'
+            ? leads.filter(l => selectedLeads.includes(l._id))
+            : filteredLeads;
+
+        if (dataToExport.length === 0) return alert("No leads to export.");
+
+        const worksheetData = dataToExport.map(l => ({
+            'Lead ID': l.leadId || 'N/A',
+            'Name': l.name || 'N/A',
+            'Email': l.email || 'N/A',
+            'Phone': l.phone || 'N/A',
+            'Source': l.source || 'N/A',
+            'Type': l.leadType || 'N/A',
+            'Status': l.status || 'N/A',
+            'Assigned To': l.assignedTo?.name || 'Unassigned',
+            'Created At': l.createdAt ? new Date(l.createdAt).toLocaleString() : 'N/A',
+            'Next Follow-Up': l.nextFollowUp ? new Date(l.nextFollowUp).toLocaleString() : 'N/A'
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Leads");
+
+        // Set column widths
+        const wscols = [
+            { wch: 15 }, { wch: 25 }, { wch: 25 }, { wch: 15 },
+            { wch: 15 }, { wch: 10 }, { wch: 10 }, { wch: 20 },
+            { wch: 20 }, { wch: 20 }
+        ];
+        worksheet['!cols'] = wscols;
+
+        XLSX.writeFile(workbook, `leads_export_${new Date().toISOString().split('T')[0]}.xlsx`);
+    };
+
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -262,6 +313,9 @@ function LeadsContent() {
                         <Button variant="ghost" size="sm" onClick={() => window.open('/templates/referral-leads.csv')}>Referral CSV</Button>
                     </div>
                     <div className="flex gap-2 items-center">
+                        <Button variant="outline" onClick={() => exportToExcel('filtered')}>
+                            <Download className="mr-2 h-4 w-4 text-structura-blue" /> Export All
+                        </Button>
                         <Button variant="outline" onClick={() => document.getElementById('csv-upload')?.click()}>
                             <FileCheck className="mr-2 h-4 w-4 text-emerald-600" /> Bulk CSV Upload
                         </Button>
@@ -332,6 +386,16 @@ function LeadsContent() {
                     <Table className="min-w-[1400px]">
                         <TableHeader>
                             <TableRow>
+                                <TableHead className="w-12">
+                                    <div className="flex items-center justify-center">
+                                        <input
+                                            type="checkbox"
+                                            className="h-4 w-4 rounded border-slate-300 text-structura-blue focus:ring-structura-blue cursor-pointer"
+                                            checked={selectedLeads.length === filteredLeads.length && filteredLeads.length > 0}
+                                            onChange={handleSelectAll}
+                                        />
+                                    </div>
+                                </TableHead>
                                 <TableHead>Lead ID</TableHead>
                                 <TableHead>Lead Name</TableHead>
                                 <TableHead>Contact</TableHead>
@@ -349,7 +413,24 @@ function LeadsContent() {
                                 <TableRow><TableCell colSpan={8} className="text-center py-4">No leads found.</TableCell></TableRow>
                             ) : (
                                 filteredLeads.map((lead) => (
-                                    <TableRow key={lead._id} className="cursor-pointer hover:bg-slate-50">
+                                    <TableRow
+                                        key={lead._id}
+                                        className={cn(
+                                            "cursor-pointer hover:bg-slate-50",
+                                            selectedLeads.includes(lead._id) && "bg-blue-50/50"
+                                        )}
+                                        onClick={() => handleSelectLead(lead._id)}
+                                    >
+                                        <TableCell onClick={(e) => e.stopPropagation()}>
+                                            <div className="flex items-center justify-center">
+                                                <input
+                                                    type="checkbox"
+                                                    className="h-4 w-4 rounded border-slate-300 text-structura-blue focus:ring-structura-blue cursor-pointer"
+                                                    checked={selectedLeads.includes(lead._id)}
+                                                    onChange={() => handleSelectLead(lead._id)}
+                                                />
+                                            </div>
+                                        </TableCell>
                                         <TableCell className="font-medium text-slate-500">{lead.leadId || 'N/A'}</TableCell>
                                         <TableCell className="font-medium text-structura-black">
                                             <Link href={`/admin/leads/${lead._id}`} className="hover:underline hover:text-structura-blue block">
@@ -385,12 +466,12 @@ function LeadsContent() {
                                                 </Button>
 
                                                 {/* Schedule */}
-                                                <Button size="sm" variant="outline" disabled={['quoted', 'sold', 'won', 'rejected'].includes(lead.status)} className={cn("text-xs py-1 h-8 transition-opacity", !['quoted', 'sold', 'won', 'rejected'].includes(lead.status) ? "border-yellow-200 text-yellow-700 hover:bg-yellow-50" : "border-slate-200 text-slate-400 opacity-60")} onClick={(e) => { e.preventDefault(); if (!['quoted', 'sold', 'won', 'rejected'].includes(lead.status)) openScheduleModal(lead._id); }}>
-                                                    <Calendar className="mr-1.5 h-3.5 w-3.5" /> Schedule
+                                                <Button size="sm" variant="outline" disabled={['accepted', 'quoted', 'sold', 'won', 'rejected'].includes(lead.status)} className={cn("text-xs py-1 h-8 transition-opacity", !['accepted', 'quoted', 'sold', 'won', 'rejected'].includes(lead.status) ? "border-yellow-200 text-yellow-700 hover:bg-yellow-50" : "border-slate-200 text-slate-400 opacity-60")} onClick={(e) => { e.preventDefault(); if (!['accepted', 'quoted', 'sold', 'won', 'rejected'].includes(lead.status)) openScheduleModal(lead._id); }}>
+                                                    <Calendar className="mr-1.5 h-3.5 w-3.5" /> {lead.status === 'follow_up' ? "Reschedule" : "Schedule"}
                                                 </Button>
 
                                                 {/* Quote */}
-                                                {['rejected'].includes(lead.status) ? (
+                                                {['accepted', 'rejected'].includes(lead.status) ? (
                                                     <Button size="sm" variant="outline" disabled className="text-xs py-1 h-8 border-slate-200 text-slate-400 opacity-60">
                                                         <FileText className="mr-1.5 h-3.5 w-3.5" /> Quote
                                                     </Button>
@@ -409,7 +490,7 @@ function LeadsContent() {
                                                 )}
 
                                                 {/* Reject */}
-                                                <Button size="sm" variant="outline" disabled={['follow_up', 'quoted', 'sold', 'won', 'rejected'].includes(lead.status)} className={cn("text-xs py-1 h-8 transition-opacity", !['follow_up', 'quoted', 'sold', 'won', 'rejected'].includes(lead.status) ? "border-red-200 text-red-600 hover:bg-red-50" : "border-slate-200 text-slate-400 opacity-60")} onClick={(e) => { e.preventDefault(); if (!['follow_up', 'quoted', 'sold', 'won', 'rejected'].includes(lead.status)) openRejectModal(lead._id); }}>
+                                                <Button size="sm" variant="outline" disabled={['accepted', 'follow_up', 'quoted', 'sold', 'won', 'rejected'].includes(lead.status)} className={cn("text-xs py-1 h-8 transition-opacity", !['accepted', 'follow_up', 'quoted', 'sold', 'won', 'rejected'].includes(lead.status) ? "border-red-200 text-red-600 hover:bg-red-50" : "border-slate-200 text-slate-400 opacity-60")} onClick={(e) => { e.preventDefault(); if (!['accepted', 'follow_up', 'quoted', 'sold', 'won', 'rejected'].includes(lead.status)) openRejectModal(lead._id); }}>
                                                     <Ban className="mr-1.5 h-3.5 w-3.5" /> Reject
                                                 </Button>
 
@@ -417,7 +498,19 @@ function LeadsContent() {
                                                     <Eye className="mr-1.5 h-3.5 w-3.5" /> View
                                                 </Button>
 
-                                                <Button size="sm" variant="ghost" className="text-xs py-1 h-8 text-slate-400 hover:text-red-600 hover:bg-red-50 px-2 transition-colors" onClick={(e) => { e.preventDefault(); handleDeleteLead(lead._id); }} title="Delete Lead">
+                                                <Button
+                                                    size="sm"
+                                                    variant="ghost"
+                                                    disabled={lead.status !== 'rejected'}
+                                                    className={cn(
+                                                        "text-xs py-1 h-8 px-2 transition-colors",
+                                                        lead.status !== 'rejected'
+                                                            ? "text-slate-200 cursor-not-allowed"
+                                                            : "text-slate-400 hover:text-red-600 hover:bg-red-50"
+                                                    )}
+                                                    onClick={(e) => { e.preventDefault(); if (lead.status === 'rejected') handleDeleteLead(lead._id); }}
+                                                    title={lead.status === 'rejected' ? "Delete Lead" : "Only rejected leads can be deleted"}
+                                                >
                                                     <Trash2 className="h-4 w-4" />
                                                 </Button>
                                             </div>
@@ -550,9 +643,60 @@ function LeadsContent() {
 
             {showAddModal && (
                 <AddLeadModal
-                    onClose={() => setShowAddModal(false)}
+                    onClose={() => { setShowAddModal(false); }}
                     onSuccess={() => { setShowAddModal(false); fetchLeads(); }}
                 />
+            )}
+
+            {/* Bulk Actions Floating Bar */}
+            {selectedLeads.length > 0 && (
+                <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 animate-in fade-in slide-in-from-bottom-4">
+                    <div className="bg-structura-black text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-6 border border-slate-700/50 backdrop-blur-md">
+                        <div className="flex items-center gap-2 border-r border-slate-700 pr-6">
+                            <div className="bg-structura-blue p-1.5 rounded-lg">
+                                <Check className="w-4 h-4 text-white" />
+                            </div>
+                            <span className="text-sm font-bold">{selectedLeads.length} Selected</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-slate-200 hover:text-white hover:bg-white/10"
+                                onClick={() => setSelectedLeads([])}
+                            >
+                                Clear Selection
+                            </Button>
+                            <Button
+                                size="sm"
+                                className="bg-structura-blue hover:bg-blue-600 text-white"
+                                onClick={() => exportToExcel('selected')}
+                            >
+                                <Download className="mr-2 h-4 w-4" /> Export Selected
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="ghost"
+                                disabled={leads.some(l => selectedLeads.includes(l._id) && l.status !== 'rejected')}
+                                className={cn(
+                                    "px-4 transition-colors",
+                                    leads.some(l => selectedLeads.includes(l._id) && l.status !== 'rejected')
+                                        ? "text-slate-600 cursor-not-allowed opacity-50"
+                                        : "text-red-400 hover:text-red-300 hover:bg-red-400/10"
+                                )}
+                                onClick={() => {
+                                    if (confirm(`Are you sure you want to delete ${selectedLeads.length} leads?`)) {
+                                        // Batch delete would go here if backend supported it
+                                        alert("Bulk delete is not yet implemented in the backend. Please delete leads individually for now.");
+                                    }
+                                }}
+                                title={leads.some(l => selectedLeads.includes(l._id) && l.status !== 'rejected') ? "Only rejected leads can be deleted" : "Delete Selected"}
+                            >
+                                <Trash2 className="mr-2 h-4 w-4" /> Delete
+                            </Button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

@@ -17,6 +17,7 @@ export function StatusBadge({ status, type = 'neutral', className }: StatusBadge
         info: "bg-blue-100 text-blue-700 border-blue-200", // contacted
         neutral: "bg-gray-100 text-gray-700 border-gray-200", // new
         special: "bg-purple-100 text-purple-700 border-purple-200", // quoted
+        indigo: "bg-indigo-100 text-indigo-700 border-indigo-200", // revision requested
     };
 
     let detectedType: string = type;
@@ -27,17 +28,18 @@ export function StatusBadge({ status, type = 'neutral', className }: StatusBadge
         else if (['follow_up', 'follow-up'].includes(lowerStatus)) detectedType = 'alert';
         else if (['rejected', 'cancelled', 'failed', 'lost', 'overdue'].includes(lowerStatus)) detectedType = 'error';
         else if (['contacted', 'sent'].includes(lowerStatus)) detectedType = 'info';
+        else if (['revision_requested', 'revision-requested'].includes(lowerStatus)) detectedType = 'indigo';
         else if (['new', 'draft'].includes(lowerStatus)) detectedType = 'neutral';
         else if (['quoted'].includes(lowerStatus)) detectedType = 'special';
     }
 
     return (
         <span className={cn(
-            "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border capitalize",
+            "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border capitalize whitespace-nowrap",
             styles[detectedType] || styles.neutral,
             className
         )}>
-            {status === 'interested' ? 'quoted' : status}
+            {status === 'interested' ? 'quoted' : status.replace('_', ' ')}
         </span>
     );
 }

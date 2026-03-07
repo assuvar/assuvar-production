@@ -14,6 +14,7 @@ async function handleRequest(request: Request, path: string[], method: string) {
         }
 
         const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000/api';
+        const { search } = new URL(request.url);
 
         const fetchOptions: RequestInit = {
             method,
@@ -28,7 +29,7 @@ async function handleRequest(request: Request, path: string[], method: string) {
             fetchOptions.body = JSON.stringify(body);
         }
 
-        const res = await fetch(`${backendUrl}/${resolvedPath}`, {
+        const res = await fetch(`${backendUrl}/${resolvedPath}${search}`, {
             ...fetchOptions,
             cache: 'no-store'
         });

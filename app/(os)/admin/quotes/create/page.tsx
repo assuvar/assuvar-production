@@ -6,9 +6,10 @@ import { PageHeader } from "@/components/os/ui/PageHeader";
 import { Button } from "@/components/os/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/os/ui/Card";
 import api from '@/lib/axios';
-import { Search, Plus, User, Mail, Phone, Hash } from 'lucide-react';
+import { Search, Plus, User, Mail, Phone, Hash, RefreshCcw, Trash2, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { AddLeadModal } from '@/components/os/crm/AddLeadModal';
+import { cn } from "@/lib/utils";
 
 function CreateQuoteContent() {
     const router = useRouter();
@@ -34,6 +35,13 @@ function CreateQuoteContent() {
     ]);
     const [discountType, setDiscountType] = useState('FLAT');
     const [discountValue, setDiscountValue] = useState(0);
+    const [amcAmount, setAmcAmount] = useState(0);
+    const [operationalCosts, setOperationalCosts] = useState<any[]>([
+        { description: 'Server Cost', amount: 0 },
+        { description: 'API Cost', amount: 0 },
+        { description: 'Cloud Cost', amount: 0 }
+    ]);
+    const [clientPaysOperationalCosts, setClientPaysOperationalCosts] = useState(false);
     const [suggestions, setSuggestions] = useState<any[]>([]);
 
     // Effects
@@ -65,6 +73,9 @@ function CreateQuoteContent() {
                 setItems(Array.isArray(source.items) ? source.items.map((i: any) => ({ ...i, _id: undefined })) : []);
                 setDiscountType(source.discountType || 'FLAT');
                 setDiscountValue(source.discountValue || 0);
+                setAmcAmount(source.amcAmount || 0);
+                setOperationalCosts(source.operationalCosts || []);
+                setClientPaysOperationalCosts(source.clientPaysOperationalCosts || false);
             }
         } catch (error) {
             console.error("Failed to clone", error);
@@ -135,7 +146,10 @@ function CreateQuoteContent() {
                 discountValue,
                 totalDiscount,
                 grandTotal,
-                validityDate
+                validityDate,
+                amcAmount,
+                operationalCosts,
+                clientPaysOperationalCosts
             });
             router.push(`/admin/leads/${targetId}`);
         } catch (error: any) {
@@ -167,6 +181,20 @@ function CreateQuoteContent() {
         setItems(newItems);
     };
 
+    const updateOperationalCost = (index: number, field: string, value: any) => {
+        const newCosts = [...operationalCosts];
+        newCosts[index][field] = value;
+        setOperationalCosts(newCosts);
+    };
+
+    const addOperationalCost = () => {
+        setOperationalCosts([...operationalCosts, { description: '', amount: 0 }]);
+    };
+
+    const removeOperationalCost = (index: number) => {
+        setOperationalCosts(operationalCosts.filter((_, i) => i !== index));
+    };
+
     const addSuggestion = (suggestion: any) => {
         setItems([...items, {
             description: suggestion.name,
@@ -182,6 +210,8 @@ function CreateQuoteContent() {
     const subtotal = items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
     const totalDiscount = discountType === 'PERCENTAGE' ? (subtotal * discountValue) / 100 : discountValue;
     const grandTotal = Math.max(0, subtotal - totalDiscount);
+    const opCostsTotal = operationalCosts.reduce((sum, cost) => sum + (cost.amount || 0), 0);
+    const recurringTotal = clientPaysOperationalCosts ? amcAmount : (amcAmount + opCostsTotal);
     const currencySymbols: any = { 'INR': '₹', 'USD': '$', 'EUR': '€', 'AUD': 'A$' };
 
     // --- RENDER ---
@@ -457,6 +487,115 @@ function CreateQuoteContent() {
                             </CardContent>
                         </Card>
 
+                        {/* 2.1 Maintenance & Recurring Costs */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {/* Maintenance Section (Yellow/Amber) */}
+                            <Card className="border-amber-100 shadow-sm">
+                                <CardHeader className="pb-3 bg-amber-50/50 rounded-t-xl border-b border-amber-100">
+                                    <CardTitle className="text-sm uppercase text-amber-700 font-bold tracking-wider flex items-center gap-2">
+                                        <RefreshCcw className="h-4 w-4 text-amber-600" /> Maintenance & Support (AMC)
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="pt-6 space-y-6">
+                                    <div className="space-y-1">
+                                        <label className="text-sm font-bold text-amber-900 flex justify-between items-center">
+                                            Annual Maintenance Fee
+                                            <span className="text-[10px] text-amber-500 font-normal italic">Yearly Recurring</span>
+                                        </label>
+                                        <div className="relative">
+                                            <span className="absolute left-3 top-2.5 text-amber-400 font-medium">{currencySymbols[currency]}</span>
+                                            <input
+                                                type="number"
+                                                placeholder="0.00"
+                                                className="w-full h-11 rounded-lg border border-amber-200 pl-8 pr-4 text-amber-900 font-bold focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all bg-white"
+                                                value={amcAmount || ""}
+                                                onChange={e => setAmcAmount(Number(e.target.value))}
+                                            />
+                                        </div>
+                                    </div>
+                                    <p className="text-xs text-amber-600/80 italic leading-relaxed bg-amber-50 p-3 rounded-lg border border-amber-100/50">
+                                        Covers software updates, bug fixes, and technical support. Typically 15-20% of project value.
+                                    </p>
+                                </CardContent>
+                            </Card>
+
+                            {/* Operational Costs Section (Green/Emerald) */}
+                            <Card className="border-emerald-100 shadow-sm">
+                                <CardHeader className="pb-3 bg-emerald-50/50 rounded-t-xl border-b border-emerald-100 flex flex-row items-center justify-between">
+                                    <CardTitle className="text-sm uppercase text-emerald-700 font-bold tracking-wider flex items-center gap-2">
+                                        <Zap className="h-4 w-4 text-emerald-600" /> Operational Costs
+                                    </CardTitle>
+                                    <Button type="button" variant="outline" size="sm" onClick={addOperationalCost} className="h-7 text-[10px] border-emerald-200 text-emerald-700 hover:bg-emerald-100 bg-white font-bold">
+                                        <Plus className="h-3 w-3 mr-1" /> Add Cost
+                                    </Button>
+                                </CardHeader>
+                                <CardContent className="pt-6 space-y-4">
+                                    <div className="flex items-center justify-between mb-4 p-2 bg-slate-50 rounded-lg border border-slate-100">
+                                        <span className="text-[11px] font-bold text-slate-600">Client pays providers directly?</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => setClientPaysOperationalCosts(!clientPaysOperationalCosts)}
+                                            className={cn(
+                                                "relative inline-flex h-5 w-10 items-center rounded-full transition-colors focus:outline-none",
+                                                clientPaysOperationalCosts ? "bg-emerald-500" : "bg-slate-300"
+                                            )}
+                                        >
+                                            <span
+                                                className={cn(
+                                                    "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+                                                    clientPaysOperationalCosts ? "translate-x-5" : "translate-x-1"
+                                                )}
+                                            />
+                                        </button>
+                                    </div>
+
+                                    <div className="space-y-3 max-h-[160px] overflow-y-auto pr-2 custom-scrollbar">
+                                        {operationalCosts.map((cost, idx) => (
+                                            <div key={idx} className="flex gap-2 items-start group">
+                                                <div className="flex-1">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="e.g. Server hosting"
+                                                        className="w-full h-9 rounded-lg border border-emerald-100 px-3 text-xs focus:ring-1 focus:ring-emerald-500 bg-white"
+                                                        value={cost.description}
+                                                        onChange={e => updateOperationalCost(idx, 'description', e.target.value)}
+                                                    />
+                                                </div>
+                                                <div className="w-28 relative">
+                                                    <span className="absolute left-2.5 top-2 text-emerald-400 text-[10px]">{currencySymbols[currency]}</span>
+                                                    <input
+                                                        type="number"
+                                                        placeholder="0"
+                                                        className="w-full h-9 rounded-lg border border-emerald-100 pl-6 pr-2 text-xs font-bold text-right focus:ring-1 focus:ring-emerald-500 bg-white"
+                                                        value={cost.amount || ""}
+                                                        onChange={e => updateOperationalCost(idx, 'amount', Number(e.target.value))}
+                                                    />
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeOperationalCost(idx)}
+                                                    className="h-9 w-6 flex items-center justify-center text-slate-300 hover:text-red-500 transition-colors"
+                                                >
+                                                    <Trash2 className="h-3.5 w-3.5" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                        {operationalCosts.length === 0 && (
+                                            <p className="text-center py-4 text-[10px] text-slate-400 italic">No operational costs added.</p>
+                                        )}
+                                    </div>
+
+                                    {clientPaysOperationalCosts && opCostsTotal > 0 && (
+                                        <div className="mt-2 p-2 bg-blue-50 border border-blue-100 rounded-lg">
+                                            <p className="text-[10px] text-blue-700 leading-tight">
+                                                * These costs will be listed as client's responsibility and not included in Assuvar's recurring total.
+                                            </p>
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </div>
+
                         {/* 3. Summary & Totals */}
                         <div className="flex justify-end">
                             <Card className="w-full md:w-1/3 border-slate-200 shadow-md">
@@ -479,7 +618,7 @@ function CreateQuoteContent() {
                                             </select>
                                             <input
                                                 type="number"
-                                                className="h-8 border rounded px-2 w-full text-right focus:ring-blue-500"
+                                                className="h-8 border rounded px-2 w-full text-right focus:ring-blue-500 font-bold"
                                                 value={discountValue}
                                                 onChange={e => setDiscountValue(Number(e.target.value))}
                                             />
@@ -490,9 +629,31 @@ function CreateQuoteContent() {
                                     )}
 
                                     <div className="pt-4 border-t border-slate-100 flex justify-between items-center">
-                                        <span className="font-bold text-lg text-slate-800">Total</span>
+                                        <span className="font-bold text-lg text-slate-800">One-time Setup</span>
                                         <span className="font-bold text-2xl text-blue-700">{currencySymbols[currency]} {grandTotal.toLocaleString()}</span>
                                     </div>
+
+                                    {(amcAmount > 0 || opCostsTotal > 0) && (
+                                        <div className="pt-4 border-t border-slate-100 mt-2 space-y-3">
+                                            <div className="flex justify-between items-center">
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm font-bold text-slate-800">Annual Recurring</span>
+                                                    <span className="text-[10px] text-slate-500 italic">To Assuvar</span>
+                                                </div>
+                                                <span className="text-xl font-bold text-amber-600">{currencySymbols[currency]} {recurringTotal.toLocaleString()}</span>
+                                            </div>
+
+                                            {clientPaysOperationalCosts && opCostsTotal > 0 && (
+                                                <div className="flex justify-between items-center pt-2 border-t border-dotted border-slate-200">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-xs font-bold text-emerald-700">Client Direct Pay</span>
+                                                        <span className="text-[9px] text-slate-400">Paid to providers</span>
+                                                    </div>
+                                                    <span className="text-sm font-bold text-emerald-600">{currencySymbols[currency]} {opCostsTotal.toLocaleString()}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </CardContent>
                             </Card>
                         </div>
@@ -507,8 +668,9 @@ function CreateQuoteContent() {
 
                     </form>
                 </div>
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 }
 

@@ -305,9 +305,12 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
 
                         {lead.status === 'accepted' && (
                             <>
+                                <div className="text-center text-emerald-600 text-sm italic py-4">
+                                    This lead has been accepted.
+                                </div>
                                 <Button
-                                    className="w-full justify-start bg-purple-600 hover:bg-purple-700 text-white"
-                                    onClick={() => router.push(`/admin/quotes/create?leadId=${id}`)}
+                                    disabled
+                                    className="w-full justify-start bg-slate-100 text-slate-400 opacity-60"
                                 >
                                     <FileText className="mr-2 h-4 w-4" /> Create Quotation
                                 </Button>
