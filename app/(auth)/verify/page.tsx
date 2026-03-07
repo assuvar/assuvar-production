@@ -31,10 +31,10 @@ export default function VerifyPage() {
             setIsSuccess(true);
             toast.success("Account verified successfully!");
 
-            // Wait 2 seconds then redirect to login
+            // Wait 2 seconds then redirect to staff login
             setTimeout(() => {
-                window.location.href = '/login';
-            }, 2000);
+                window.location.href = '/staff/login';
+            }, 2500);
 
         } catch (err: any) {
             const errorMessage = err.response?.data?.message || 'Verification failed. Please check your code.';
@@ -54,12 +54,12 @@ export default function VerifyPage() {
                             <CheckCircle2 className="h-16 w-16 text-green-500 animate-pulse" />
                         </div>
                         <CardTitle className="text-2xl text-green-800">Account Verified!</CardTitle>
-                        <p className="text-green-700">
-                            Your account is now active. We are redirecting you to the login page where you can sign in using a dynamic OTP.
+                        <p className="text-green-700 font-medium italic">
+                            Your account is now activated. We are redirecting you to the staff portal where you can sign in using a secure OTP.
                         </p>
-                        <div className="pt-4">
-                            <Button variant="outline" className="border-green-200 text-green-700" onClick={() => window.location.href = '/login'}>
-                                Go to Login Now
+                        <div className="pt-4 drop-shadow-sm">
+                            <Button variant="outline" className="border-green-300 text-green-800 font-bold hover:bg-green-100" onClick={() => window.location.href = '/staff/login'}>
+                                Enter Staff Portal
                             </Button>
                         </div>
                     </CardContent>

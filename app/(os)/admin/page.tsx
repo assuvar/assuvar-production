@@ -13,12 +13,25 @@ import { PageHeader } from "@/components/os/ui/PageHeader";
 import { Card, CardContent } from "@/components/os/ui/Card";
 import { Button } from "@/components/os/ui/Button";
 import Link from 'next/link';
+import Cookies from 'js-cookie';
 
 export default function AdminDashboard() {
     const [stats, setStats] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [isManager, setIsManager] = useState(false);
 
     useEffect(() => {
+        const info = Cookies.get('user_info');
+        if (info) {
+            try {
+                const user = JSON.parse(info);
+                if (user.role === 'employee' && user.designation === 'Manager') {
+                    setIsManager(true);
+                }
+            } catch (e) {
+                console.error('Failed to parse user_info', e);
+            }
+        }
         fetchStats();
     }, []);
 
@@ -133,46 +146,48 @@ export default function AdminDashboard() {
                 </div>
             </section>
 
-            {/* --- SALES SECTION --- */}
-            <section className="space-y-4">
-                <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                        <TrendingUp className="h-5 w-5 text-emerald-600" />
-                        Sales & Revenue
-                    </h2>
-                    <Link href="/admin/sales" className="text-sm font-medium text-emerald-600 hover:underline">View Sales</Link>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <StatCard
-                        title="Total Sales"
-                        value={stats.sales.total}
-                        icon={Briefcase}
-                        color="emerald"
-                        details={`${stats.sales.thisMonth} new this month`}
-                    />
-                    <StatCard
-                        title="Converted to Project"
-                        value={stats.sales.convertedToProject}
-                        icon={Briefcase}
-                        color="blue"
-                        details="Projects actively initiated"
-                    />
-                    <StatCard
-                        title="Partial Payments"
-                        value={stats.sales.partial}
-                        icon={CreditCard}
-                        color="amber"
-                        details="Awaiting full settlement"
-                    />
-                    <StatCard
-                        title="Pending Collection"
-                        value={stats.sales.pending}
-                        icon={AlertCircle}
-                        color="rose"
-                        details="Payment not yet started"
-                    />
-                </div>
-            </section>
+            {/* --- SALES SECTION - Restricted for Managers --- */}
+            {!isManager && (
+                <section className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <TrendingUp className="h-5 w-5 text-emerald-600" />
+                            Sales & Revenue
+                        </h2>
+                        <Link href="/admin/sales" className="text-sm font-medium text-emerald-600 hover:underline">View Sales</Link>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <StatCard
+                            title="Total Sales"
+                            value={stats.sales.total}
+                            icon={Briefcase}
+                            color="emerald"
+                            details={`${stats.sales.thisMonth} new this month`}
+                        />
+                        <StatCard
+                            title="Converted to Project"
+                            value={stats.sales.convertedToProject}
+                            icon={Briefcase}
+                            color="blue"
+                            details="Projects actively initiated"
+                        />
+                        <StatCard
+                            title="Partial Payments"
+                            value={stats.sales.partial}
+                            icon={CreditCard}
+                            color="amber"
+                            details="Awaiting full settlement"
+                        />
+                        <StatCard
+                            title="Pending Collection"
+                            value={stats.sales.pending}
+                            icon={AlertCircle}
+                            color="rose"
+                            details="Payment not yet started"
+                        />
+                    </div>
+                </section>
+            )}
         </div>
     );
 }

@@ -59,8 +59,8 @@ export default function EmployeesListPage() {
     return (
         <div className="space-y-6">
             <PageHeader
-                title="Added Employees"
-                description="Manage and edit your invited employee staff."
+                title="Employee & Staffs"
+                description="Manage and edit your internal team and staff members."
             />
 
             <Card>
