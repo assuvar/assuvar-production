@@ -16,8 +16,10 @@ export default function LoginPage() {
     const [error, setError] = useState('');
     const [identifier, setIdentifier] = useState('');
     const [otp, setOtp] = useState('');
+    const [password, setPassword] = useState('');
     const [turnstileToken, setTurnstileToken] = useState<string>('');
     const [step, setStep] = useState<'identifier' | 'otp'>('identifier');
+    const [loginMode, setLoginMode] = useState<'otp' | 'password'>('password');
 
     const handleGetOTP = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -57,19 +59,29 @@ export default function LoginPage() {
         setError('');
 
         try {
-            const res = await axios.post('/api/auth/proxy/login', {
+            const loginData: any = {
                 email: identifier,
-                otp,
                 turnstileToken
-            });
+            };
+
+            if (loginMode === 'otp') {
+                loginData.otp = otp;
+            } else {
+                loginData.password = password;
+            }
+
+            const res = await axios.post('/api/auth/proxy/login', loginData);
 
             const { user } = res.data;
             toast.success("Welcome back!");
 
-            // Redirect based on role
+            // Redirect based on role and designation
             if (user.role === 'admin') window.location.href = '/admin';
             else if (user.role === 'client') window.location.href = '/client';
-            else if (user.role === 'employee') window.location.href = '/employee';
+            else if (user.role === 'employee') {
+                if (user.designation === 'Manager') window.location.href = '/admin';
+                else window.location.href = '/employee';
+            }
             else if (user.role === 'partner') window.location.href = '/partner';
             else window.location.href = '/';
 
@@ -87,12 +99,29 @@ export default function LoginPage() {
             <CardHeader className="text-center pb-2">
                 <CardTitle>{step === 'identifier' ? 'Sign In' : 'Account Access'}</CardTitle>
                 <p className="text-sm text-slate-500 mt-1">
-                    {step === 'identifier' ? 'Enter your email/username to receive a login code' : 'Enter the code sent to your email'}
+                    {step === 'identifier'
+                        ? (loginMode === 'otp' ? 'Enter your email/username to receive a login code' : 'Enter your credentials to access your account')
+                        : 'Enter the code sent to your email'}
                 </p>
             </CardHeader>
             <CardContent>
+                <div className="flex border-b border-structura-border mb-6">
+                    <button
+                        onClick={() => { setLoginMode('otp'); setStep('identifier'); }}
+                        className={`flex-1 py-2 text-sm font-medium transition-colors ${loginMode === 'otp' ? 'text-structura-blue border-b-2 border-structura-blue' : 'text-slate-400'}`}
+                    >
+                        OTP Login
+                    </button>
+                    <button
+                        onClick={() => { setLoginMode('password'); setStep('identifier'); }}
+                        className={`flex-1 py-2 text-sm font-medium transition-colors ${loginMode === 'password' ? 'text-structura-blue border-b-2 border-structura-blue' : 'text-slate-400'}`}
+                    >
+                        Password Login
+                    </button>
+                </div>
+
                 {step === 'identifier' ? (
-                    <form onSubmit={handleGetOTP} className="space-y-4">
+                    <form onSubmit={loginMode === 'otp' ? handleGetOTP : handleLogin} className="space-y-4">
                         {error && (
                             <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md border border-red-100 flex flex-col gap-2">
                                 <span className="italic">{error}</span>
@@ -118,12 +147,29 @@ export default function LoginPage() {
                             </div>
                         </div>
 
+                        {loginMode === 'password' && (
+                            <div className="space-y-1.5">
+                                <label className="text-sm font-medium text-structura-black">Password</label>
+                                <div className="relative">
+                                    <ShieldCheck className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                                    <input
+                                        type="password"
+                                        placeholder="Your Password"
+                                        className="h-10 w-full rounded-lg border border-structura-border pl-10 pr-4 text-sm focus:border-structura-blue focus:outline-none focus:ring-1 focus:ring-structura-blue bg-white"
+                                        required
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                        )}
+
                         <Button
                             type="submit"
                             className="w-full"
                             isLoading={isLoading}
                         >
-                            Get Login Code <ArrowRight className="ml-2 h-4 w-4" />
+                            {loginMode === 'otp' ? 'Get Login Code' : 'Sign In'} <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
 
                         {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
