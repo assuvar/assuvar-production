@@ -1,303 +1,309 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { use, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import api from '@/lib/axios';
 import { PageHeader } from '@/components/os/ui/PageHeader';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/os/ui/Card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/os/ui/Tabs';
-import { Users, Briefcase, DollarSign, FileText, Mail, Phone, MapPin, Lock, Key, Check } from 'lucide-react';
 import { Button } from '@/components/os/ui/Button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/os/ui/Card';
+import { StatusBadge } from '@/components/os/ui/StatusBadge';
+import {
+    ArrowLeft, Briefcase, FileText, CalendarDays,
+    DollarSign, Mail, Phone, User, Hash, Wrench, Clock
+} from 'lucide-react';
+import { formatDate } from '@/lib/utils';
+import Link from 'next/link';
+import { toast } from 'sonner';
 
-export default function ClientDashboard() {
-    const { id } = useParams();
+export default function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params);
+    const router = useRouter();
+
     const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetchClientData();
-    }, []);
+    // Editable operational fields
+    const [maintenanceDate, setMaintenanceDate] = useState('');
+    const [operationalCost, setOperationalCost] = useState('');
+    const [saving, setSaving] = useState(false);
 
-    const fetchClientData = async () => {
+    useEffect(() => { fetchData(); }, [id]);
+
+    const fetchData = async () => {
         try {
             const res = await api.get(`/clients/${id}`);
             setData(res.data);
-        } catch (error) {
-            console.error(error);
+            if (res.data.profile.maintenanceDate) {
+                setMaintenanceDate(new Date(res.data.profile.maintenanceDate).toISOString().split('T')[0]);
+            }
+            if (res.data.profile.operationalCost) {
+                setOperationalCost(res.data.profile.operationalCost.toString());
+            }
+        } catch (err) {
+            console.error(err);
         } finally {
             setLoading(false);
         }
     };
 
-    if (loading) return <div className="p-8">Loading dashboard...</div>;
-    if (!data) return <div className="p-8">Client not found</div>;
+    const handleSave = async () => {
+        setSaving(true);
+        try {
+            await api.patch(`/clients/${id}`, {
+                maintenanceDate: maintenanceDate || undefined,
+                operationalCost: operationalCost ? Number(operationalCost) : 0,
+            });
+            toast.success('Client details updated');
+            fetchData();
+        } catch (err) {
+            toast.error('Failed to save changes');
+        } finally {
+            setSaving(false);
+        }
+    };
 
-    const { user, profile, sales, projects, lead } = data;
+    if (loading) return <div className="p-8 text-slate-500">Loading...</div>;
+    if (!data) return <div className="p-8 text-slate-500">Client not found.</div>;
 
-    // Calc Total Lifetime Value
-    const totalSpent = sales.reduce((sum: number, sale: any) => sum + sale.totalAmount, 0);
+    const { profile, sale, project } = data;
+    const lead = sale?.quoteId?.leadId || {};
+    const quote = sale?.quoteId || {};
 
     return (
-        <div className="space-y-6">
-            <PageHeader
-                title={profile?.companyName || user.name}
-                description={`Client Dashboard • ID: ${profile?.clientId || data?.clientId || user?.username || 'Unknown'}`}
-            >
-                <div className="flex gap-2">
-                    <Button variant="outline">Edit Profile</Button>
-                    <Button>Create New Project</Button>
-                </div>
-            </PageHeader>
-
-            {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Card>
-                    <CardContent className="p-4 flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-slate-500 font-medium">Lifetime Value</p>
-                            <h3 className="text-2xl font-bold mt-1">₹{totalSpent.toLocaleString()}</h3>
-                        </div>
-                        <div className="p-2 bg-green-100 rounded-full text-green-600"><DollarSign className="h-6 w-6" /></div>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardContent className="p-4 flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-slate-500 font-medium">Active Projects</p>
-                            <h3 className="text-2xl font-bold mt-1">{projects.length}</h3>
-                        </div>
-                        <div className="p-2 bg-blue-100 rounded-full text-blue-600"><Briefcase className="h-6 w-6" /></div>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardContent className="p-4 flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-slate-500 font-medium">Total Invoices</p>
-                            <h3 className="text-2xl font-bold mt-1">{sales.length}</h3>
-                        </div>
-                        <div className="p-2 bg-purple-100 rounded-full text-purple-600"><FileText className="h-6 w-6" /></div>
-                    </CardContent>
-                </Card>
-                {/* Add more stats if needed */}
+        <div className="space-y-6 max-w-5xl mx-auto pb-20">
+            <div className="flex items-center gap-4 mb-2">
+                <Button variant="ghost" size="sm" onClick={() => router.back()} className="text-slate-500">
+                    <ArrowLeft className="h-4 w-4 mr-1" /> Back
+                </Button>
             </div>
+
+            <PageHeader
+                title={profile.contactPerson}
+                description={`Client ID: ${profile.clientId || '—'} • ${profile.email}`}
+            >
+                <span className="font-mono text-sm font-bold text-structura-blue bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-lg">
+                    {profile.clientId || 'NO ID'}
+                </span>
+            </PageHeader>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                {/* Left: Contact Info */}
-                <div className="lg:col-span-1 space-y-6">
-                    <Card>
-                        <CardHeader><CardTitle>Client Details</CardTitle></CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex items-center gap-3">
-                                <Users className="h-5 w-5 text-slate-400" />
-                                <div>
-                                    <p className="text-sm font-medium">Primary Contact</p>
-                                    <p className="text-slate-600">{profile?.contactPerson || user.name}</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <Mail className="h-5 w-5 text-slate-400" />
-                                <div>
-                                    <p className="text-sm font-medium">Email</p>
-                                    <p className="text-slate-600 text-sm overflow-hidden text-ellipsis">{user.email}</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <Phone className="h-5 w-5 text-slate-400" />
-                                <div>
-                                    <p className="text-sm font-medium">Phone</p>
-                                    <p className="text-slate-600">{profile?.phone || 'N/A'}</p>
-                                </div>
-                            </div>
-                            <div className="pt-4 border-t">
-                                <p className="text-xs text-slate-500 uppercase font-bold mb-2">Original Context</p>
-                                <p className="text-sm">Source: <span className="font-medium">{lead?.source || 'Converted Lead'}</span></p>
-                                <p className="text-sm">Since: <span className="font-medium">{new Date(user.createdAt).toLocaleDateString()}</span></p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
+                {/* LEFT: Client Info + Quotation + Project */}
+                <div className="lg:col-span-2 space-y-6">
 
-                {/* Left: Portal Access Control */}
-                <div className="lg:col-span-1 space-y-6">
-                    <Card className="border-purple-200">
-                        <CardHeader className="bg-purple-50/50 pb-3">
-                            <CardTitle className="text-purple-900 flex items-center gap-2">
-                                <Lock className="h-4 w-4" /> Portal Access
+                    {/* Client Info Card */}
+                    <Card>
+                        <CardHeader className="border-b bg-slate-50 pb-4">
+                            <CardTitle className="text-base flex items-center gap-2">
+                                <User className="h-4 w-4 text-slate-500" /> Client Information
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4 pt-4">
-
-                            {/* Access Status Indicator */}
-                            <div className="flex justify-between items-center text-sm border-b pb-3 border-purple-100">
-                                <span className="text-slate-600 font-medium">Portal Status</span>
-                                {user ? (
-                                    <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-bold flex items-center gap-1">
-                                        <Check className="h-3 w-3" /> ACTIVE
-                                    </span>
-                                ) : (
-                                    <span className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded text-xs font-bold">
-                                        NOT GRANTED
-                                    </span>
-                                )}
+                        <CardContent className="p-6">
+                            <div className="grid grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                    <div>
+                                        <p className="text-xs font-semibold uppercase text-slate-400 mb-1">Contact Person</p>
+                                        <p className="font-medium text-structura-black">{profile.contactPerson}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-semibold uppercase text-slate-400 mb-1">Company</p>
+                                        <p className="font-medium text-structura-black">{profile.companyName || '—'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1">
+                                            <Mail className="h-3 w-3" /> Email
+                                        </p>
+                                        <p className="text-slate-700">{profile.email}</p>
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    <div>
+                                        <p className="text-xs font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1">
+                                            <Phone className="h-3 w-3" /> Phone
+                                        </p>
+                                        <p className="text-slate-700">{profile.phone || '—'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1">
+                                            <Hash className="h-3 w-3" /> Client ID
+                                        </p>
+                                        <p className="font-mono text-structura-blue font-bold">{profile.clientId || '—'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-semibold uppercase text-slate-400 mb-1">Registered On</p>
+                                        <p className="text-slate-700">{formatDate(profile.createdAt)}</p>
+                                    </div>
+                                </div>
                             </div>
-
-                            {user ? (
-                                /* Access GRANTED View */
-                                <div className="space-y-4">
-                                    <div className="bg-slate-50 p-3 rounded-md space-y-2 text-sm border border-slate-100">
-                                        <div className="flex justify-between">
-                                            <span className="text-slate-500">Username</span>
-                                            <span className="font-mono font-medium">{user.username}</span>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-slate-500">Password</span>
-                                            <div className="flex items-center gap-2">
-                                                <span className="font-mono font-medium bg-white px-2 rounded border">
-                                                    {user.tempPassword || '••••••••'}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        {user.tempPassword && (
-                                            <p className="text-[10px] text-slate-400 text-right">
-                                                *Temp password shown.
-                                            </p>
-                                        )}
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <Button
-                                            variant="outline"
-                                            className="text-xs"
-                                            onClick={() => alert(`Credentials:\nUsername: ${user.username}\nPassword: ${user.tempPassword || 'Hidden'}`)}
-                                        >
-                                            <Key className="h-3 w-3 mr-1" /> View Full
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            className="text-xs"
-                                            onClick={async () => {
-                                                if (!confirm("Resend credentials email to client?")) return;
-                                                // Re-trigger generation/sending logic (assuming endpoint handles existing users by resending)
-                                                // Or generic "Resend" endpoint. 
-                                                // clientController says: "If user exists... generate new temp password". 
-                                                // Warning user about password reset might be good.
-                                                await api.post(`/clients/${id}/credentials`);
-                                                alert("New credentials generated and sent!");
-                                                fetchClientData(); // Refresh to see new temp pass
-                                            }}
-                                        >
-                                            <Mail className="h-3 w-3 mr-1" /> Resend
-                                        </Button>
-                                    </div>
-                                </div>
-                            ) : (
-                                /* Access NOT GRANTED View */
-                                <div className="space-y-4">
-                                    {/* Pre-requisite Checks */}
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between items-center text-xs">
-                                            <span className="text-slate-500">Advance Payment</span>
-                                            {totalSpent > 0 ? (
-                                                <span className="text-green-600 font-bold flex items-center gap-1"><Check className="h-3 w-3" /> Paid</span>
-                                            ) : (
-                                                <span className="text-red-500 font-medium">Pending</span>
-                                            )}
-                                        </div>
-                                        <div className="flex justify-between items-center text-xs">
-                                            <span className="text-slate-500">Agreement</span>
-                                            <select
-                                                className="h-6 text-[10px] border rounded bg-white"
-                                                defaultValue={profile?.agreementStatus || 'PENDING'}
-                                                onChange={() => alert("Agreement Mock Update")}
-                                            >
-                                                <option value="PENDING">Pending</option>
-                                                <option value="SIGNED">Signed</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <Button
-                                        className="w-full bg-purple-600 hover:bg-purple-700"
-                                        disabled={totalSpent <= 0 && profile?.agreementStatus !== 'SIGNED'} // Strict check, can be overridden by Force
-                                        onClick={async () => {
-                                            const confirmMsg = totalSpent > 0
-                                                ? "Advance Payment Verified. Generate Access?"
-                                                : "Warning: No Advance Payment. Force Generate Access?";
-
-                                            if (!confirm(confirmMsg)) return;
-
-                                            try {
-                                                await api.post(`/clients/${id}/credentials`, { force: true });
-                                                alert("Access Granted! Email sent.");
-                                                fetchClientData();
-                                            } catch (e: any) {
-                                                alert("Error: " + e.message);
-                                            }
-                                        }}
-                                    >
-                                        <Key className="h-4 w-4 mr-2" /> Grant Access
-                                    </Button>
-                                    <p className="text-[10px] text-center text-slate-400">
-                                        Generates login & sends email
-                                    </p>
-                                </div>
-                            )}
                         </CardContent>
                     </Card>
+
+                    {/* Quotation Card */}
+                    {sale && (
+                        <Card>
+                            <CardHeader className="border-b bg-slate-50 pb-4">
+                                <CardTitle className="text-base flex items-center gap-2">
+                                    <FileText className="h-4 w-4 text-slate-500" /> Quotation Details
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-6 space-y-4">
+                                <div className="grid grid-cols-3 gap-6">
+                                    <div>
+                                        <p className="text-xs font-semibold uppercase text-slate-400 mb-1">Quotation ID</p>
+                                        <p className="font-mono text-sm font-bold text-slate-700">{quote.quotationId || '—'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-semibold uppercase text-slate-400 mb-1">Sale ID</p>
+                                        <p className="font-mono text-sm font-bold text-slate-700">{sale.saleId || '—'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-semibold uppercase text-slate-400 mb-1">Payment Status</p>
+                                        <StatusBadge status={sale.paymentStatus} />
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-semibold uppercase text-slate-400 mb-1">Total Value</p>
+                                        <p className="text-lg font-bold text-structura-black">
+                                            {sale.currency} {sale.totalAmount?.toLocaleString()}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-semibold uppercase text-slate-400 mb-1">Paid</p>
+                                        <p className="text-lg font-bold text-green-600">
+                                            {sale.currency} {sale.paidAmount?.toLocaleString()}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-semibold uppercase text-slate-400 mb-1">Pending</p>
+                                        <p className="text-lg font-bold text-red-500">
+                                            {sale.currency} {sale.pendingAmount?.toLocaleString()}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="pt-2 flex gap-3">
+                                    <Link href={`/admin/sales/${sale._id}`}>
+                                        <Button variant="outline" size="sm">
+                                            <FileText className="h-3.5 w-3.5 mr-1.5" /> Open Sale
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+
+                    {/* Project Card */}
+                    {project ? (
+                        <Card>
+                            <CardHeader className="border-b bg-green-50 pb-4">
+                                <CardTitle className="text-base flex items-center gap-2 text-green-800">
+                                    <Briefcase className="h-4 w-4" /> Project Details
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-6 space-y-4">
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div>
+                                        <p className="text-xs font-semibold uppercase text-slate-400 mb-1">Project Name</p>
+                                        <p className="font-semibold text-structura-black">{project.name}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-semibold uppercase text-slate-400 mb-1">Status</p>
+                                        <StatusBadge status={project.status} />
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-semibold uppercase text-slate-400 mb-1">Start Date</p>
+                                        <p className="text-slate-700">{formatDate(project.startDate)}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-semibold uppercase text-slate-400 mb-1">Target End</p>
+                                        <p className="text-slate-700">{formatDate(project.endDate)}</p>
+                                    </div>
+                                </div>
+                                <Link href={`/admin/projects/${project._id}`}>
+                                    <Button variant="outline" size="sm">
+                                        <Briefcase className="h-3.5 w-3.5 mr-1.5" /> Open Project Workspace
+                                    </Button>
+                                </Link>
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <Card>
+                            <CardContent className="p-6 text-center text-slate-400">
+                                <Briefcase className="h-8 w-8 mx-auto mb-2 text-slate-300" />
+                                <p className="text-sm">No project initiated yet.</p>
+                            </CardContent>
+                        </Card>
+                    )}
                 </div>
 
-                {/* Right: Tabs */}
-                <div className="lg:col-span-2">
-                    <Tabs defaultValue="sales">
-                        <TabsList className="mb-4">
-                            <TabsTrigger value="sales">Sales & Invoices</TabsTrigger>
-                            <TabsTrigger value="projects">Projects</TabsTrigger>
-                            <TabsTrigger value="quotes">Quotations</TabsTrigger>
-                        </TabsList>
-
-                        <TabsContent value="sales">
-                            <Card>
-                                <CardHeader><CardTitle>Sales History</CardTitle></CardHeader>
-                                <CardContent>
-                                    <div className="overflow-x-auto">
-                                        <table className="w-full text-sm">
-                                            <thead className="text-left bg-slate-50 border-b">
-                                                <tr>
-                                                    <th className="p-3">Reference</th>
-                                                    <th className="p-3">Date</th>
-                                                    <th className="p-3">Amount</th>
-                                                    <th className="p-3">Pending</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y">
-                                                {sales.map((sale: any) => (
-                                                    <tr key={sale._id}>
-                                                        <td className="p-3 font-medium">{sale.saleId || sale.saleNumber || sale._id.slice(-6)}</td>
-                                                        <td className="p-3">{new Date(sale.createdAt).toLocaleDateString()}</td>
-                                                        <td className="p-3">₹{sale.totalAmount.toLocaleString()}</td>
-                                                        <td className="p-3 text-red-600">₹{sale.pendingAmount.toLocaleString()}</td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </TabsContent>
-
-                        <TabsContent value="projects">
-                            <div className="p-8 text-center text-slate-500 border-2 dashed border-slate-200 rounded-xl">
-                                No active projects yet.
+                {/* RIGHT: Operational Details Panel */}
+                <div className="space-y-6">
+                    <Card className="border-t-4 border-t-structura-blue shadow-sm">
+                        <CardHeader className="border-b bg-slate-50 pb-4">
+                            <CardTitle className="text-base flex items-center gap-2">
+                                <Wrench className="h-4 w-4 text-structura-blue" /> Operational Details
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-6 space-y-5">
+                            <div>
+                                <label className="text-xs font-semibold uppercase text-slate-400 block mb-2 flex items-center gap-1">
+                                    <CalendarDays className="h-3.5 w-3.5" /> Maintenance Date
+                                </label>
+                                <input
+                                    type="date"
+                                    className="w-full h-10 border border-slate-300 rounded-lg px-3 text-sm focus:ring-2 focus:ring-structura-blue focus:border-transparent transition"
+                                    value={maintenanceDate}
+                                    onChange={e => setMaintenanceDate(e.target.value)}
+                                />
                             </div>
-                        </TabsContent>
-
-                        <TabsContent value="quotes">
-                            <div className="p-8 text-center text-slate-500 border-2 dashed border-slate-200 rounded-xl">
-                                Quotations will appear here.
+                            <div>
+                                <label className="text-xs font-semibold uppercase text-slate-400 block mb-2 flex items-center gap-1">
+                                    <DollarSign className="h-3.5 w-3.5" /> Operational Cost
+                                </label>
+                                <div className="relative">
+                                    <span className="absolute left-3 top-2.5 text-slate-400 text-sm font-bold">
+                                        {sale?.currency || '₹'}
+                                    </span>
+                                    <input
+                                        type="number"
+                                        className="w-full h-10 border border-slate-300 rounded-lg pl-8 pr-3 text-sm focus:ring-2 focus:ring-structura-blue focus:border-transparent transition"
+                                        placeholder="0"
+                                        value={operationalCost}
+                                        onChange={e => setOperationalCost(e.target.value)}
+                                    />
+                                </div>
                             </div>
-                        </TabsContent>
-                    </Tabs>
+                            <Button
+                                className="w-full bg-structura-blue hover:bg-structura-blue/90"
+                                onClick={handleSave}
+                                disabled={saving}
+                            >
+                                {saving ? 'Saving...' : 'Save Changes'}
+                            </Button>
+                        </CardContent>
+                    </Card>
+
+                    {/* Payment History Summary */}
+                    {sale?.payments?.length > 0 && (
+                        <Card>
+                            <CardHeader className="border-b bg-slate-50 pb-4">
+                                <CardTitle className="text-base flex items-center gap-2">
+                                    <Clock className="h-4 w-4 text-slate-500" /> Payment History
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-0">
+                                <div className="divide-y max-h-64 overflow-y-auto">
+                                    {sale.payments.map((p: any, i: number) => (
+                                        <div key={i} className="flex justify-between px-4 py-3 text-sm">
+                                            <div>
+                                                <p className="text-slate-600 text-xs">{formatDate(p.date)}</p>
+                                                <p className="text-xs text-slate-400 italic truncate max-w-[140px]">{p.note}</p>
+                                            </div>
+                                            <p className="font-bold text-green-600">+{sale.currency} {p.amount?.toLocaleString()}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
                 </div>
             </div>
         </div>
