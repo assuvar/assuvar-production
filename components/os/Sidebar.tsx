@@ -21,7 +21,7 @@ import {
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { NavigationItem, checkPermission, managerNavigation } from '@/config/navigation';
+import { NavigationItem, checkPermission, managerNavigation, salesNavigation } from '@/config/navigation';
 import Cookies from 'js-cookie';
 
 interface SidebarProps {
@@ -54,9 +54,16 @@ export default function Sidebar({ items: initialItems }: SidebarProps) {
             try {
                 const user = JSON.parse(info);
 
-                // If Manager is in /admin, use managerNavigation
-                if (user.role === 'employee' && user.designation === 'Manager' && pathname.startsWith('/admin')) {
-                    setItems(managerNavigation);
+                // If Manager/Sales is in /admin, use relevant navigation
+                if (user.role === 'employee' && pathname.startsWith('/admin')) {
+                    if (user.designation === 'Manager') {
+                        setItems(managerNavigation);
+                    } else if (user.designation === 'Sales Staff') {
+                        setItems(salesNavigation);
+                    } else {
+                        const filtered = initialItems.filter(item => checkPermission(user, item.name));
+                        setItems(filtered);
+                    }
                 } else {
                     // Filter standard items based on internal permissions
                     const filtered = initialItems.filter(item => checkPermission(user, item.name));
@@ -101,7 +108,14 @@ export default function Sidebar({ items: initialItems }: SidebarProps) {
                         className="w-full h-full object-contain"
                     />
                 </div>
-                <span className="text-xl font-bold font-display text-structura-black tracking-tight">Assuvar OS</span>
+                <span className="sr-only">Assuvar</span>
+                <Image
+                    src="/assets/assuvar-wordmark.svg"
+                    alt="Assuvar"
+                    width={173}
+                    height={30}
+                    className="h-5 w-auto"
+                />
             </div>
 
             {/* Navigation */}

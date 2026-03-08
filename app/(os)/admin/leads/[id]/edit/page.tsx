@@ -50,9 +50,9 @@ export default function EditLeadPage({ params }: { params: Promise<{ id: string 
     useEffect(() => {
         const fetchStaffAndLead = async () => {
             try {
-                // Fetch Staff
-                const res = await api.get('/users');
-                setStaffList(res.data.filter((u: any) => u.role === 'admin' || u.role === 'employee'));
+                // Fetch Staff from refined endpoint
+                const res = await api.get('/admin/employees');
+                setStaffList(res.data); // This now contains EmployeeProfile populated with User data
 
                 // Fetch Lead
                 const leadRes = await api.get(`/leads/${id}`);
@@ -186,11 +186,11 @@ export default function EditLeadPage({ params }: { params: Promise<{ id: string 
                                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 p-4 bg-orange-50 border border-orange-100 rounded-md my-4">
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium text-orange-800">Referral Name / ID</label>
-                                        <input name="referralId" value={formData.referralId} className="w-full h-10 rounded-md border border-orange-200 px-3 bg-white" onChange={handleChange} placeholder="Partner ID or Name" />
+                                        <input name="referralId" value={formData.referralId} className="w-full h-10 rounded-md border border-orange-200 px-3 bg-white" onChange={handleChange} placeholder="Referrer ID or Name" />
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium text-orange-800">Referrer Email</label>
-                                        <input name="referralEmail" type="email" value={formData.referralEmail} className="w-full h-10 rounded-md border border-orange-200 px-3 bg-white" onChange={handleChange} placeholder="partner@example.com" />
+                                        <input name="referralEmail" type="email" value={formData.referralEmail} className="w-full h-10 rounded-md border border-orange-200 px-3 bg-white" onChange={handleChange} placeholder="referrer@example.com" />
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium text-orange-800">Commission (%)</label>
@@ -266,7 +266,11 @@ export default function EditLeadPage({ params }: { params: Promise<{ id: string 
                                 </div>
                                 <select name="assignedTo" value={formData.assignedTo} className="w-full h-10 rounded-md border border-slate-300 px-3 bg-white" onChange={handleChange}>
                                     <option value="">Auto-Assign (Admin)</option>
-                                    {staffList.map(u => <option key={u._id} value={u._id}>{u.name} ({u.role})</option>)}
+                                    {staffList.map(staff => (
+                                        <option key={staff.userId?._id || staff._id} value={staff.userId?._id || staff._id}>
+                                            {staff.fullName || staff.userId?.name} ({staff.designation || 'Staff'})
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                             <div className="space-y-2">

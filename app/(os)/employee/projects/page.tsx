@@ -58,9 +58,17 @@ export default function EmployeeProjectsPage() {
                             <CardContent className="space-y-4">
                                 <p className="text-sm text-slate-600 line-clamp-2">{task.description}</p>
 
-                                <div className="pt-4 border-t flex items-center justify-between text-xs font-bold uppercase tracking-wider">
-                                    <div className="text-slate-400">Project</div>
-                                    <div className="text-structura-blue">{task.projectId?.name || 'Assuvar Project'}</div>
+                                <div className="pt-4 border-t flex flex-col gap-2">
+                                    <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider">
+                                        <div className="text-slate-400">Project</div>
+                                        <div className="text-structura-blue">{task.projectId?.name || 'Assuvar Project'}</div>
+                                    </div>
+                                    {task.projectId?.notes && (
+                                        <div className="mt-2 p-3 bg-slate-50 border border-slate-100 rounded text-xs text-slate-600">
+                                            <div className="font-bold text-slate-400 mb-1 uppercase tracking-tighter">Project Notes / Instructions:</div>
+                                            <p className="whitespace-pre-wrap">{task.projectId.notes}</p>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider">
                                     <div className="text-slate-400">Deadline</div>

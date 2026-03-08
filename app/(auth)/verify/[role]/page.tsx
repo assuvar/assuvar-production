@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/os/ui/Car
 import { Button } from "@/components/os/ui/Button";
 import { useState, use } from "react";
 import { useRouter } from "next/navigation";
-import { Mail, ShieldCheck, ArrowRight, CheckCircle2, UserCheck, Briefcase, Handshake } from "lucide-react";
+import { Mail, ShieldCheck, ArrowRight, CheckCircle2, UserCheck, Briefcase } from "lucide-react";
 import axios from "axios";
 import { toast } from 'sonner';
 
@@ -53,17 +53,6 @@ export default function VerifyRolePage({ params }: VerifyRolePageProps) {
             btnClass: 'bg-indigo-600 hover:bg-indigo-700',
             accentColor: 'text-indigo-500',
             loginPath: '/login/employee'
-        },
-        partner: {
-            title: 'Partner Activation',
-            icon: Handshake,
-            color: 'emerald',
-            borderClass: 'border-emerald-100',
-            bgClass: 'bg-emerald-50/30',
-            textClass: 'text-emerald-700',
-            btnClass: 'bg-emerald-600 hover:bg-emerald-700',
-            accentColor: 'text-emerald-500',
-            loginPath: '/login/partner'
         }
     };
 

@@ -21,21 +21,13 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
         description: '',
         deadline: '',
         salary: '',
-        employeeEmail: '' // We need ID, but form usually takes name/email. I'll ask for Email and look up ID or just ID if simple. 
-        // Prompt step 8 script found admin ID. 
-        // Real user needs to select Employee. 
-        // I don't have a "Get Employees" API implemented explicitly in the prompt list. 
-        // Prompt lists APIs: Lead, Quote, Sale, Payment, Project, Task, Payroll. 
-        // Does NOT list "Get Users/Employees". 
-        // But `authRoutes` has `register`. 
-        // If I can't fetch employees, I can't build a dropdown. 
-        // I will use a simple text input for "Employee ID" for integration Phase 1 strictness, 
-        // OR better, try to fetch users if I can? 
-        // No "Get Users" route in backend. 
-        // "Logic: Employee has login". 
-        // Workaround: I'll assume the admin knows the Employee ID for Phase 1 or use the Admin's ID for testing. 
-        // I'll add a helper Text Input for Employee ID.
+        employeeId: ''
     });
+
+    const [staffList, setStaffList] = useState<any[]>([]);
+    const [projectNotes, setProjectNotes] = useState('');
+    const [isEditingNotes, setIsEditingNotes] = useState(false);
+    const [notesLoading, setNotesLoading] = useState(false);
 
     useEffect(() => {
         fetchData();
@@ -66,7 +58,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
             // Since we don't have a user search API, I will just take the input as Employee ID.
             await api.post('/projects/tasks', {
                 projectId: id,
-                employeeId: taskForm.employeeEmail, // Using this field for ID
+                employeeId: taskForm.employeeId,
                 name: taskForm.name,
                 description: taskForm.description,
                 deadline: taskForm.deadline,
@@ -94,6 +86,29 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                 <div className="lg:col-span-2 space-y-6">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between">
+                            <CardTitle className="text-base">Project Overview & Notes</CardTitle>
+                            <Button size="sm" variant="outline" onClick={() => isEditingNotes ? handleUpdateNotes() : setIsEditingNotes(true)} isLoading={notesLoading}>
+                                {isEditingNotes ? 'Save Notes' : 'Edit'}
+                            </Button>
+                        </CardHeader>
+                        <CardContent>
+                            {isEditingNotes ? (
+                                <textarea
+                                    className="w-full h-32 p-3 border rounded-md bg-slate-50 text-sm"
+                                    placeholder="Add internal notes for the delivery team here..."
+                                    value={projectNotes}
+                                    onChange={(e) => setProjectNotes(e.target.value)}
+                                />
+                            ) : (
+                                <div className="p-4 bg-slate-50 border rounded-md whitespace-pre-wrap text-sm text-slate-700">
+                                    {projectNotes || 'No notes added yet for this project.'}
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between">
                             <CardTitle className="text-base">Tasks</CardTitle>
                             <Button size="sm" variant="outline" onClick={() => setShowAssign(!showAssign)}>
                                 {showAssign ? 'Cancel' : 'Assign Task'}
@@ -103,43 +118,50 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                             {showAssign && (
                                 <form onSubmit={handleAssignTask} className="mb-6 p-4 border rounded bg-slate-50 space-y-3">
                                     <input
-                                        placeholder="Task Name" className="w-full border p-2 rounded" required
+                                        placeholder="Task Name" className="w-full h-10 border p-2 rounded bg-white" required
                                         value={taskForm.name} onChange={e => setTaskForm({ ...taskForm, name: e.target.value })}
                                     />
-                                    <input
-                                        placeholder="Employee ID (Copy from DB)" className="w-full border p-2 rounded" required
-                                        value={taskForm.employeeEmail} onChange={e => setTaskForm({ ...taskForm, employeeEmail: e.target.value })}
-                                    />
-                                    <input
-                                        placeholder="Description" className="w-full border p-2 rounded"
+                                    <select
+                                        className="w-full h-10 border p-2 rounded bg-white" required
+                                        value={taskForm.employeeId} onChange={e => setTaskForm({ ...taskForm, employeeId: e.target.value })}
+                                    >
+                                        <option value="">Select Employee to Assign</option>
+                                        {staffList.map(item => (
+                                            <option key={item.userId?._id || item._id} value={item.userId?._id || item._id}>
+                                                {item.fullName || item.userId?.name} ({item.designation})
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <textarea
+                                        placeholder="Task Description" className="w-full border p-2 rounded bg-white min-h-[80px]"
                                         value={taskForm.description} onChange={e => setTaskForm({ ...taskForm, description: e.target.value })}
                                     />
                                     <div className="flex gap-2">
                                         <input
-                                            type="date" className="w-full border p-2 rounded" required
+                                            type="date" className="w-full border p-2 rounded bg-white" required
                                             value={taskForm.deadline} onChange={e => setTaskForm({ ...taskForm, deadline: e.target.value })}
                                         />
                                         <input
-                                            type="number" placeholder="Salary" className="w-full border p-2 rounded" required
+                                            type="number" placeholder="Salary / Commission" className="w-full border p-2 rounded bg-white" required
                                             value={taskForm.salary} onChange={e => setTaskForm({ ...taskForm, salary: e.target.value })}
                                         />
                                     </div>
-                                    <Button type="submit">Assign</Button>
+                                    <Button type="submit" className="w-full">Assign Task</Button>
                                 </form>
                             )}
 
                             {tasks.length === 0 ? <p className="text-slate-500">No tasks assigned.</p> : (
                                 <div className="space-y-4">
                                     {tasks.map(task => (
-                                        <div key={task._id} className="border p-3 rounded flex justify-between items-center">
+                                        <div key={task._id} className="border p-4 rounded-lg flex justify-between items-center hover:bg-slate-50 transition-colors">
                                             <div>
-                                                <p className="font-medium">{task.name}</p>
-                                                <p className="text-sm text-slate-500">Assigned: {task.employeeId?.name || task.employeeId}</p>
-                                                <p className="text-xs text-slate-400">Due: {formatDate(task.deadline)}</p>
+                                                <p className="font-bold text-slate-900">{task.name}</p>
+                                                <p className="text-xs text-slate-500 font-medium">Assigned to: {task.employeeId?.name || 'Unknown'}</p>
+                                                <p className="text-[11px] text-slate-400 mt-1">Due: {formatDate(task.deadline)}</p>
                                             </div>
                                             <div className="text-right">
                                                 <StatusBadge status={task.status} />
-                                                <p className="text-sm font-bold mt-1">${task.salary}</p>
+                                                <p className="text-sm font-black text-structura-blue mt-1">${task.salary}</p>
                                             </div>
                                         </div>
                                     ))}

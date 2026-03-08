@@ -28,8 +28,14 @@ export default function AuthLayout({
                                     height={42}
                                 />
                             </div>
-                            <h1 className="text-2xl font-bold font-display text-structura-black">Assuvar OS</h1>
-                            <p className="text-slate-500 font-medium text-sm mt-1">Enterprise Operating System</p>
+                            <span className="sr-only">Assuvar</span>
+                            <Image
+                                src="/assets/assuvar-wordmark.svg"
+                                alt="Assuvar"
+                                width={173}
+                                height={30}
+                                className="h-6 w-auto"
+                            />
                         </div>
 
                         {children}

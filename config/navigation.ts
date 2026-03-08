@@ -22,17 +22,11 @@ export const adminNavigation: NavigationItem[] = [
         children: [
             { name: 'Invitation', href: '/admin/users/invite', icon: 'ShieldCheck' },
             { name: 'Added Employees', href: '/admin/users/employees-list', icon: 'Users' },
-            { name: 'Added Partners', href: '/admin/users/partners-list', icon: 'Handshake' },
         ]
     },
 ];
 
-export const partnerNavigation: NavigationItem[] = [
-    { name: 'Dashboard', href: '/partner', icon: 'LayoutDashboard' },
-    { name: 'Leads', href: '/partner/leads', icon: 'Users' },
-    { name: 'Sales', href: '/partner/sales', icon: 'FileText' },
-    { name: 'Commissions', href: '/partner/commissions', icon: 'DollarSign' },
-];
+
 
 export const employeeNavigation: NavigationItem[] = [
     { name: 'Dashboard', href: '/employee/dashboard', icon: 'LayoutDashboard' },
@@ -44,13 +38,20 @@ export const employeeNavigation: NavigationItem[] = [
 export const managerNavigation: NavigationItem[] = [
     { name: 'Dashboard', href: '/admin', icon: 'LayoutDashboard' },
     { name: 'Leads', href: '/admin/leads', icon: 'Users' },
-    { name: 'Clients', href: '/admin/clients', icon: 'Briefcase' },
     { name: 'Quotations', href: '/admin/quotes', icon: 'FileText' },
     { name: 'Sales', href: '/admin/sales', icon: 'DollarSign' },
+    { name: 'Clients', href: '/admin/clients', icon: 'Briefcase' },
     { name: 'Projects', href: '/admin/projects', icon: 'Briefcase' },
     { name: 'Employee & Staffs', href: '/admin/payroll', icon: 'Users' },
     { name: 'Marketing', href: '/admin/marketing', icon: 'Megaphone' },
     { name: 'Documents', href: '/admin/documents', icon: 'BookOpen' },
+];
+
+export const salesNavigation: NavigationItem[] = [
+    { name: 'Dashboard', href: '/admin', icon: 'LayoutDashboard' },
+    { name: 'Leads', href: '/admin/leads', icon: 'Users' },
+    { name: 'Quotations', href: '/admin/quotes', icon: 'FileText' },
+    { name: 'Sales', href: '/admin/sales', icon: 'DollarSign' },
 ];
 
 /**
@@ -60,16 +61,21 @@ export const managerNavigation: NavigationItem[] = [
 export function checkPermission(user: { role: string, designation?: string }, item: string): boolean {
     if (user.role === 'admin') return true;
 
-    if (user.role === 'employee' && user.designation === 'Manager') {
-        const allowed = [
-            'Dashboard', 'Leads', 'Clients', 'Quotations',
-            'Sales', 'Projects', 'Employee & Staffs', 'Marketing', 'Documents'
-        ];
-        return allowed.includes(item);
-    }
-
-    // For normal employees
     if (user.role === 'employee') {
+        if (user.designation === 'Manager') {
+            const allowed = [
+                'Dashboard', 'Leads', 'Clients', 'Quotations',
+                'Sales', 'Projects', 'Employee & Staffs', 'Marketing', 'Documents'
+            ];
+            return allowed.includes(item);
+        }
+
+        if (user.designation === 'Sales Staff') {
+            const allowed = ['Dashboard', 'Leads', 'Quotations', 'Sales'];
+            return allowed.includes(item);
+        }
+
+        // For normal employees
         const allowed = ['Dashboard', 'My Profile', 'My Projects', 'My Payslips'];
         return allowed.includes(item);
     }

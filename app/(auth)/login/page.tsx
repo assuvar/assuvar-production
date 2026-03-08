@@ -79,10 +79,9 @@ export default function LoginPage() {
             if (user.role === 'admin') window.location.href = '/admin';
             else if (user.role === 'client') window.location.href = '/client';
             else if (user.role === 'employee') {
-                if (user.designation === 'Manager') window.location.href = '/admin';
+                if (user.designation === 'Manager' || user.designation === 'Sales Staff') window.location.href = '/admin';
                 else window.location.href = '/employee';
             }
-            else if (user.role === 'partner') window.location.href = '/partner';
             else window.location.href = '/';
 
         } catch (err: any) {
