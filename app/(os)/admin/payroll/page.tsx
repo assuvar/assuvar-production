@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Users, UserPlus, Mail, Shield, Clock, Search } from 'lucide-react';
+import { Users, UserPlus, Mail, Shield, Clock, Search, Edit2, Trash2, Loader2 } from 'lucide-react';
 import { PageHeader } from '@/components/os/ui/PageHeader';
 import { Button } from '@/components/os/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/os/ui/Card';
@@ -10,13 +10,28 @@ import { StatusBadge } from '@/components/os/ui/StatusBadge';
 import { Input } from '@/components/os/ui/Input';
 import api from '@/lib/axios';
 import Link from 'next/link';
+import { toast } from 'sonner';
+import UserEditModal from '@/components/os/users/UserEditModal';
+import Cookies from 'js-cookie';
 
 export default function EmployeeStaffPage() {
     const [employees, setEmployees] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
+    const [isManager, setIsManager] = useState(false);
 
     useEffect(() => {
+        const info = Cookies.get('user_info');
+        if (info) {
+            try {
+                const user = JSON.parse(info);
+                if (user.role === 'employee' && user.designation === 'Manager') {
+                    setIsManager(true);
+                }
+            } catch (e) { }
+        }
         fetchEmployees();
     }, []);
 
@@ -28,6 +43,23 @@ export default function EmployeeStaffPage() {
             console.error("Failed to fetch employees", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleEdit = (employee: any) => {
+        setSelectedEmployee(employee);
+        setIsEditModalOpen(true);
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!window.confirm('Are you sure you want to delete this employee & staff member? This will also delete their login account.')) return;
+
+        try {
+            await api.delete(`/admin/employees/${id}`);
+            toast.success('Employee & Staff deleted successfully');
+            fetchEmployees();
+        } catch (err: any) {
+            toast.error(err.response?.data?.message || 'Failed to delete employee & staff member');
         }
     };
 
@@ -51,7 +83,7 @@ export default function EmployeeStaffPage() {
                 title="Employee & Staffs"
                 description="Manage your internal team and access levels."
             >
-                <Link href="/admin/users/invite">
+                <Link href="/admin/payroll/invite">
                     <Button className="flex items-center gap-2">
                         <UserPlus className="h-4 w-4" /> Invite Employee
                     </Button>
@@ -89,6 +121,7 @@ export default function EmployeeStaffPage() {
                                         <TableHead>Role</TableHead>
                                         <TableHead>Status</TableHead>
                                         <TableHead>Joined</TableHead>
+                                        <TableHead className="text-right">Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -115,6 +148,24 @@ export default function EmployeeStaffPage() {
                                                 <TableCell className="text-slate-500 text-sm">
                                                     {emp.userId?.createdAt ? new Date(emp.userId.createdAt).toLocaleDateString() : 'N/A'}
                                                 </TableCell>
+                                                <TableCell className="text-right space-x-2">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-8 w-8 p-0 text-slate-500 hover:text-indigo-600"
+                                                        onClick={() => handleEdit(emp)}
+                                                    >
+                                                        <Edit2 className="h-4 w-4" />
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-8 w-8 p-0 text-slate-500 hover:text-red-600"
+                                                        onClick={() => handleDelete(emp._id)}
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </TableCell>
                                             </TableRow>
                                         ))
                                     )}
@@ -124,6 +175,14 @@ export default function EmployeeStaffPage() {
                     </Card>
                 </div>
             )}
+
+            <UserEditModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                onSuccess={fetchEmployees}
+                user={selectedEmployee}
+                role="employee"
+            />
         </div>
     );
 }
@@ -141,7 +200,7 @@ function EmptyState() {
                 </p>
                 <div className="flex gap-4">
                     <Link href="/admin/users/invite">
-                        <Button variant="default" className="flex items-center gap-2">
+                        <Button variant="primary" className="flex items-center gap-2">
                             <UserPlus className="h-4 w-4" /> Invite via Access Control
                         </Button>
                     </Link>

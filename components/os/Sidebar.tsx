@@ -21,7 +21,8 @@ import {
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { NavigationItem } from '@/config/navigation';
+import { NavigationItem, checkPermission, managerNavigation } from '@/config/navigation';
+import Cookies from 'js-cookie';
 
 interface SidebarProps {
     items: NavigationItem[];
@@ -41,10 +42,31 @@ const iconMap: Record<string, LucideIcon> = {
     Handshake
 };
 
-export default function Sidebar({ items }: SidebarProps) {
+export default function Sidebar({ items: initialItems }: SidebarProps) {
     const pathname = usePathname();
     const router = useRouter();
     const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
+    const [items, setItems] = useState<NavigationItem[]>(initialItems);
+
+    useEffect(() => {
+        const info = Cookies.get('user_info');
+        if (info) {
+            try {
+                const user = JSON.parse(info);
+
+                // If Manager is in /admin, use managerNavigation
+                if (user.role === 'employee' && user.designation === 'Manager' && pathname.startsWith('/admin')) {
+                    setItems(managerNavigation);
+                } else {
+                    // Filter standard items based on internal permissions
+                    const filtered = initialItems.filter(item => checkPermission(user, item.name));
+                    setItems(filtered);
+                }
+            } catch (e) {
+                console.error('Failed to parse user_info', e);
+            }
+        }
+    }, [pathname, initialItems]);
 
     // Auto-expand menu if child is active
     useEffect(() => {
