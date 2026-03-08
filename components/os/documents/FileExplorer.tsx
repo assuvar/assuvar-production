@@ -30,6 +30,7 @@ interface FileItem {
     category: string;
     subCategory?: string;
     createdAt: string;
+    isDynamic?: boolean;
     referenceId?: {
         _id: string;
         quotationId?: string;
@@ -55,11 +56,11 @@ interface FileExplorerProps {
     currentSubFolder: string | null;
     onFolderClick: (folder: string) => void;
     onSubFolderClick: (subFolder: string | null) => void;
+    clientId?: string;
 }
 
 const folders = [
     { name: 'Quotations', description: 'Generated proposals & quote drafts' },
-    { name: 'Sales', description: 'Sales orders and agreement copies' },
     { name: 'Advance Receipts', description: 'Proof of advance payments' },
     { name: 'Invoices', description: 'Final project invoices' },
     { name: 'Pay Slips', description: 'Employee salary slips' },
@@ -68,23 +69,27 @@ const folders = [
 
 const quotationStatuses = ['Draft', 'Sent', 'Accepted', 'Rejected', 'Revised'];
 
-export function FileExplorer({ currentFolder, currentSubFolder, onFolderClick, onSubFolderClick }: FileExplorerProps) {
+export function FileExplorer({ currentFolder, currentSubFolder, onFolderClick, onSubFolderClick, clientId }: FileExplorerProps) {
     const [files, setFiles] = useState<FileItem[]>([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        if (currentFolder) {
+        if (currentFolder || clientId) {
             fetchFiles();
         }
-    }, [currentFolder, currentSubFolder]);
+    }, [currentFolder, currentSubFolder, clientId]);
 
     const fetchFiles = async () => {
         setLoading(true);
         try {
-            let url = `/documents?category=${currentFolder}`;
+            const categoryToFetch = currentFolder ? currentFolder : 'All';
+            let url = `/documents?category=${categoryToFetch}`;
             if (currentSubFolder) {
                 // Ensure we handle potential inconsistencies in case or spacing if they exist
                 url += `&subCategory=${currentSubFolder}`;
+            }
+            if (clientId) {
+                url += `&clientId=${clientId}`;
             }
             const res = await api.get(url);
             setFiles(res.data);
@@ -108,6 +113,25 @@ export function FileExplorer({ currentFolder, currentSubFolder, onFolderClick, o
 
     const handleDownload = async (file: FileItem) => {
         try {
+            if (file.isDynamic) {
+                // Fetch direct from URL
+                const response = await api.get(file.url.replace(/^\/api/, ''), {
+                    responseType: 'blob'
+                });
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                let fileName = file.name;
+                if (!fileName.toLowerCase().endsWith('.pdf') && file.type === 'pdf') {
+                    fileName += '.pdf';
+                }
+                link.setAttribute('download', fileName);
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                return;
+            }
+
             const response = await api.get(`/documents/${file._id}/download`, {
                 responseType: 'blob'
             });
@@ -153,7 +177,7 @@ export function FileExplorer({ currentFolder, currentSubFolder, onFolderClick, o
         return null;
     };
 
-    if (!currentFolder) {
+    if (!currentFolder && !clientId) {
         return (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {folders.map((folder) => (
@@ -217,7 +241,7 @@ export function FileExplorer({ currentFolder, currentSubFolder, onFolderClick, o
                     <div className="bg-slate-50/50 border-b border-slate-100 px-6 py-3 flex items-center justify-between">
                         <span className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
                             <FolderOpen className="h-3.5 w-3.5" />
-                            Files in {currentFolder} {currentSubFolder ? `> ${currentSubFolder}` : ''}
+                            Files in {currentFolder || 'All Categories'} {currentSubFolder ? `> ${currentSubFolder}` : ''}
                         </span>
                         <span className="text-xs font-medium text-slate-400">{files.length} items</span>
                     </div>
@@ -247,7 +271,7 @@ export function FileExplorer({ currentFolder, currentSubFolder, onFolderClick, o
                                         <TableCell colSpan={5} className="h-40 text-center">
                                             <div className="flex flex-col items-center justify-center text-slate-400">
                                                 <FileText className="h-10 w-10 mb-2 opacity-20" />
-                                                <p className="text-sm font-medium">No documents found in this {currentSubFolder ? 'sub-category' : 'folder'}</p>
+                                                <p className="text-sm font-medium">No documents found for this client / folder.</p>
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -304,7 +328,7 @@ export function FileExplorer({ currentFolder, currentSubFolder, onFolderClick, o
                                                     <div className="flex items-center justify-end gap-2">
                                                         <div className="flex items-center bg-slate-100/50 rounded-lg p-1 border border-transparent group-hover:bg-white group-hover:border-slate-200 transition-all">
                                                             <a
-                                                                href={`${api.defaults.baseURL?.replace('/api', '')}${file.url}`}
+                                                                href={`${api.defaults.baseURL?.replace('/api', '')}${file.isDynamic ? `/api${file.url.replace('/api', '')}` : file.url}`}
                                                                 target="_blank"
                                                                 rel="noreferrer"
                                                                 title="View"

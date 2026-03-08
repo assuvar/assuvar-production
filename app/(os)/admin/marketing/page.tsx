@@ -6,8 +6,9 @@ import { PageHeader } from '@/components/os/ui/PageHeader';
 import { Button } from '@/components/os/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/os/ui/Card';
 import { Input } from '@/components/os/ui/Input';
-import { Send, Users, Megaphone, CheckSquare, Square, Mail } from 'lucide-react';
+import { Send, Users, Megaphone, CheckSquare, Square, Mail, Paperclip, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { RichEditor } from '@/components/os/ui/RichEditor';
 
 export default function MarketingPage() {
     const [audiences, setAudiences] = useState<any>({
@@ -30,6 +31,7 @@ export default function MarketingPage() {
     // Email form state
     const [subject, setSubject] = useState('');
     const [body, setBody] = useState('');
+    const [attachments, setAttachments] = useState<File[]>([]);
     const [sending, setSending] = useState(false);
 
     useEffect(() => {
@@ -83,6 +85,22 @@ export default function MarketingPage() {
         setSelectedEmails(next);
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            const newFiles = Array.from(e.target.files);
+            // Limit to max 5 files
+            if (attachments.length + newFiles.length > 5) {
+                toast.error('Maximum 5 attachments allowed');
+                return;
+            }
+            setAttachments(prev => [...prev, ...newFiles]);
+        }
+    };
+
+    const removeAttachment = (index: number) => {
+        setAttachments(prev => prev.filter((_, i) => i !== index));
+    };
+
     const handleSend = async () => {
         if (selectedEmails.size === 0) return toast.error('No recipients selected');
         if (!subject.trim()) return toast.error('Subject is required');
@@ -94,15 +112,24 @@ export default function MarketingPage() {
         const recipients = resolvedEmails.filter(r => selectedEmails.has(r.email));
 
         try {
-            const res = await api.post('/marketing/send-bulk', {
-                recipients,
-                subject,
-                body
+            const formData = new FormData();
+            formData.append('subject', subject);
+            formData.append('body', body);
+            formData.append('recipients', JSON.stringify(recipients));
+
+            attachments.forEach(file => {
+                formData.append('attachments', file);
             });
+
+            const res = await api.post('/marketing/send-bulk', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+
             toast.success(`Campaign sent! ${res.data.successCount} succeeded, ${res.data.failCount} failed.`);
             // Reset form
             setSubject('');
             setBody('');
+            setAttachments([]);
         } catch (error) {
             console.error(error);
             toast.error('Failed to send campaign');
@@ -246,14 +273,45 @@ export default function MarketingPage() {
                                 />
                             </div>
 
-                            <div className="flex-1 flex flex-col min-h-[300px]">
-                                <label className="text-xs font-bold uppercase text-slate-500 mb-1.5 block">Email Body (Supports basic HTML & Line breaks)</label>
-                                <textarea
-                                    className="flex-1 w-full p-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-structura-blue focus:border-transparent resize-none text-sm text-slate-700"
-                                    placeholder="Write your email content here..."
-                                    value={body}
-                                    onChange={e => setBody(e.target.value)}
-                                />
+                            <div className="flex-1 flex flex-col min-h-[400px]">
+                                <label className="text-xs font-bold uppercase text-slate-500 mb-1.5 block">Email Body (Rich Text)</label>
+                                <div className="border border-slate-200 rounded-lg overflow-hidden">
+                                    <RichEditor
+                                        value={body}
+                                        onChange={setBody}
+                                        placeholder="Draft your promotional campaign, update, or newsletter here..."
+                                        height={400}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Attachments Section */}
+                            <div>
+                                <label className="text-xs font-bold uppercase text-slate-500 mb-2 flex items-center gap-1">
+                                    <Paperclip className="h-3 w-3" /> Attachments
+                                </label>
+                                <div className="space-y-3">
+                                    <input
+                                        type="file"
+                                        multiple
+                                        className="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-structura-blue hover:file:bg-blue-100 transition-colors"
+                                        onChange={handleFileChange}
+                                        disabled={attachments.length >= 5}
+                                    />
+                                    {attachments.length > 0 && (
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            {attachments.map((file, i) => (
+                                                <div key={i} className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-md text-xs border border-slate-200">
+                                                    <span className="truncate max-w-[150px]" title={file.name}>{file.name}</span>
+                                                    <button onClick={() => removeAttachment(i)} className="text-slate-400 hover:text-red-500">
+                                                        <X className="w-3 h-3" />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                    <p className="text-[10px] text-slate-400">You can attach up to 5 files (Images, PDFs, etc.)</p>
+                                </div>
                             </div>
 
                             <div className="pt-4 border-t border-slate-100 flex items-center justify-between">

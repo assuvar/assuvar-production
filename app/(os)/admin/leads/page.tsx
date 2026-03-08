@@ -397,8 +397,8 @@ function LeadsContent() {
                                     </div>
                                 </TableHead>
                                 <TableHead>Lead ID</TableHead>
-                                <TableHead>Lead Name</TableHead>
-                                <TableHead>Contact</TableHead>
+                                <TableHead>Company / Lead</TableHead>
+                                <TableHead>Contact Info</TableHead>
                                 <TableHead>Type</TableHead>
                                 <TableHead>Status</TableHead>
                                 {activeTab === 'Follow-Up' && <TableHead>Next Follow-Up</TableHead>}
@@ -432,15 +432,15 @@ function LeadsContent() {
                                             </div>
                                         </TableCell>
                                         <TableCell className="font-medium text-slate-500">{lead.leadId || 'N/A'}</TableCell>
-                                        <TableCell className="font-medium text-structura-black">
-                                            <Link href={`/admin/leads/${lead._id}`} className="hover:underline hover:text-structura-blue block">
-                                                {lead.name}
+                                        <TableCell>
+                                            <Link href={`/admin/leads/${lead._id}`} className="font-bold text-[15px] text-structura-black hover:underline hover:text-structura-blue block">
+                                                {lead.companyName || lead.name}
                                             </Link>
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex flex-col">
-                                                <span className="text-sm font-medium">{lead.phone || '-'}</span>
-                                                <span className="text-xs text-slate-500">{lead.email || '-'}</span>
+                                                <span className="text-sm font-medium">{lead.name}</span>
+                                                <span className="text-xs text-slate-500">{lead.phone || '-'} | {lead.email || '-'}</span>
                                             </div>
                                         </TableCell>
                                         <TableCell className="capitalize">{lead.leadType || '-'}</TableCell>
@@ -549,9 +549,17 @@ function LeadsContent() {
                                 <span className="text-slate-500 italic">Example Lead:</span>
                                 <span className="font-mono font-bold text-slate-700">ASL2603ID1</span>
                             </div>
-                            <div className="flex items-center justify-between text-[11px]">
+                            <div className="flex items-center justify-between text-[11px] border-b border-slate-50 pb-1">
                                 <span className="text-slate-500 italic">Example Quote:</span>
                                 <span className="font-mono font-bold text-slate-700">ASQ2603ID1</span>
+                            </div>
+                            <div className="flex items-center justify-between text-[11px] border-b border-slate-50 pb-1">
+                                <span className="text-slate-500 italic">Example Sale:</span>
+                                <span className="font-mono font-bold text-slate-700">ASS2603ID1</span>
+                            </div>
+                            <div className="flex items-center justify-between text-[11px]">
+                                <span className="text-slate-500 italic">Example Client:</span>
+                                <span className="font-mono font-bold text-structura-blue">ASC26CID1</span>
                             </div>
                         </div>
                         <p className="text-[10px] text-orange-600 mt-4 bg-orange-50 p-2 rounded border border-orange-100">

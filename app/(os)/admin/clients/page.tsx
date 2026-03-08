@@ -66,10 +66,12 @@ export default function ClientsPage() {
                                             {client.clientId || '—'}
                                         </span>
                                     </TableCell>
-                                    <TableCell className="font-semibold text-structura-black">
-                                        {client.contactPerson}
+                                    <TableCell>
+                                        <div className="font-bold text-[15px] text-structura-black">
+                                            {client.companyName || client.contactPerson}
+                                        </div>
                                         {client.companyName && client.companyName !== client.contactPerson && (
-                                            <p className="text-xs text-slate-400 font-normal">{client.companyName}</p>
+                                            <div className="text-xs text-slate-500 font-medium mt-0.5">{client.contactPerson}</div>
                                         )}
                                     </TableCell>
                                     <TableCell className="text-slate-600">{client.email}</TableCell>

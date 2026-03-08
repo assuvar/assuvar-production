@@ -61,7 +61,7 @@ export default function SalesPage() {
 
         const worksheetData = dataToExport.map(s => ({
             'Sale ID': s.saleId || 'N/A',
-            'Client Ref': s.clientReference || 'N/A',
+            'Company / Client': s.clientReference || 'N/A',
             'Linked Quote': s.quoteId?.quotationId || 'Unknown',
             'Total Amount': s.totalAmount,
             'Paid Amount': s.paidAmount,
@@ -123,7 +123,7 @@ export default function SalesPage() {
                                 </div>
                             </TableHead>
                             <TableHead>Sale ID</TableHead>
-                            <TableHead>Client Ref</TableHead>
+                            <TableHead>Company / Client</TableHead>
                             <TableHead>Linked Quote</TableHead>
                             <TableHead>Total Amount</TableHead>
                             <TableHead>Paid</TableHead>
@@ -163,8 +163,15 @@ export default function SalesPage() {
                                                 {sale.saleId || sale._id.substring(sale._id.length - 6).toUpperCase()}
                                             </Link>
                                         </TableCell>
-                                        <TableCell className="font-medium text-slate-600">
-                                            {sale.clientReference || 'N/A'}
+                                        <TableCell>
+                                            <div className="font-bold text-[15px] text-structura-black">
+                                                {sale.quoteId?.leadId?.companyName || sale.clientReference || 'N/A'}
+                                            </div>
+                                            {sale.quoteId?.leadId?.companyName && (
+                                                <div className="text-xs text-slate-500 font-medium mt-0.5">
+                                                    {sale.quoteId?.leadId?.name}
+                                                </div>
+                                            )}
                                         </TableCell>
                                         <TableCell className="text-sm text-slate-500">
                                             {sale.quoteId?.quotationId || 'Unknown'}

@@ -67,25 +67,37 @@ export default function CreateLeadPage() {
         setFormData(prev => ({ ...prev, serviceInterest: options }));
     };
 
-    const handleLookup = async (field: 'email' | 'clientId', value: string) => {
+    const handleLookup = async (field: 'email' | 'clientId' | 'companyName', value: string) => {
         if (!value) return;
         setLookupLoading(true);
         try {
-            const payload = field === 'clientId' ? { clientId: value } : { email: value };
+            const payload: any = {};
+            payload[field] = value;
             const res = await api.post('/clients/lookup', payload);
             if (res.data) {
                 const client = res.data;
-                setFormData(prev => ({
-                    ...prev,
-                    name: client.name,
-                    email: client.email,
-                    phone: client.phone || prev.phone,
-                    companyName: client.companyName || prev.companyName,
-                    existingClientId: client._id
-                }));
-                if (field === 'email' && !clientIdInput) setClientIdInput(client.clientId);
+                const sysNote = `[System Autofill]: Details fetched from existing Client Profile (${client.clientId})`;
+
+                setFormData(prev => {
+                    const existingNotes = prev.internalNotes || '';
+                    const updatedNotes = existingNotes.includes(sysNote)
+                        ? existingNotes
+                        : (existingNotes ? existingNotes + '\n\n' + sysNote : sysNote);
+
+                    return {
+                        ...prev,
+                        name: client.name || prev.name,
+                        email: client.email || prev.email,
+                        phone: client.phone || prev.phone,
+                        companyName: client.companyName || prev.companyName,
+                        existingClientId: client._id,
+                        internalNotes: updatedNotes
+                    };
+                });
+
+                if (!clientIdInput) setClientIdInput(client.clientId);
                 if (field === 'clientId' && !formData.email) setFormData(prev => ({ ...prev, email: client.email }));
-                alert(`Found Client: ${client.name}. Details autofilled.`);
+                alert(`Found Client: ${client.name} ${client.companyName ? `(${client.companyName})` : ''}. Details autofilled.`);
             }
         } catch (error) {
             if (field === 'clientId') console.warn("Client ID not found");
@@ -120,6 +132,18 @@ export default function CreateLeadPage() {
                     <Card>
                         <CardHeader><CardTitle>Client Information</CardTitle></CardHeader>
                         <CardContent className="space-y-4">
+                            <div className="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-sm flex gap-3">
+                                <div className="mt-0.5">
+                                    <svg className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p className="font-semibold">Auto-Fetch Available</p>
+                                    <p className="mt-0.5 text-blue-700">Add Business Email and Company Name to fetch the details of an existing client automatically.</p>
+                                </div>
+                            </div>
+
                             {/* Optional Client ID Lookup */}
                             <div className="space-y-2">
                                 <label className="text-sm font-bold text-purple-600">Existing Client ID (Optional)</label>
@@ -171,12 +195,12 @@ export default function CreateLeadPage() {
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium">Contact Name *</label>
-                                    <input name="name" value={formData.name} required className="w-full h-10 rounded-md border border-slate-300 px-3" onChange={handleChange} placeholder="John Doe" />
+                                    <label className="text-sm font-medium">Business / Company Name *</label>
+                                    <input name="companyName" value={formData.companyName} className="w-full h-10 rounded-md border border-slate-300 px-3" onChange={handleChange} onBlur={(e) => handleLookup('companyName', e.target.value)} placeholder="Acme Corp" required />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium">Company Name</label>
-                                    <input name="companyName" value={formData.companyName} className="w-full h-10 rounded-md border border-slate-300 px-3" onChange={handleChange} placeholder="Acme Corp" />
+                                    <label className="text-sm font-medium">Contact Person</label>
+                                    <input name="name" value={formData.name} required className="w-full h-10 rounded-md border border-slate-300 px-3" onChange={handleChange} placeholder="John Doe" />
                                 </div>
                             </div>
 

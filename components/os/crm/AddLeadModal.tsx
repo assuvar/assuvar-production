@@ -22,6 +22,7 @@ interface AddLeadModalProps {
 
 export function AddLeadModal({ onClose, onSuccess }: AddLeadModalProps) {
     const [loading, setLoading] = useState(false);
+    const [isCheckingEmail, setIsCheckingEmail] = useState(false);
     const [staffList, setStaffList] = useState<any[]>([]);
 
     const [formData, setFormData] = useState({
@@ -51,6 +52,29 @@ export function AddLeadModal({ onClose, onSuccess }: AddLeadModalProps) {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleEmailBlur = async () => {
+        if (!formData.email) return;
+        setIsCheckingEmail(true);
+        try {
+            const res = await api.post('/leads/lookup', { email: formData.email });
+            if (res.data) {
+                setFormData(prev => ({
+                    ...prev,
+                    name: prev.name || res.data.name || '',
+                    phone: prev.phone || res.data.phone || '',
+                    country: prev.country || res.data.country || '',
+                    companyName: prev.companyName || res.data.companyName || '',
+                    industry: prev.industry || res.data.industry || ''
+                }));
+            }
+        } catch (error) {
+            // Ignore 404s (client not found is expected)
+            console.log("No previous lead found with this email.");
+        } finally {
+            setIsCheckingEmail(false);
+        }
     };
 
     const handleServiceToggle = (service: string) => {
@@ -165,17 +189,20 @@ export function AddLeadModal({ onClose, onSuccess }: AddLeadModalProps) {
                             <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100">2. Pre-Requisite Client Information</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                 <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center justify-between">
+                                        <span>Business Email *</span>
+                                        {isCheckingEmail && <span className="text-[10px] text-structura-blue animate-pulse normal-case">Lookup in progress...</span>}
+                                    </label>
+                                    <div className="relative">
+                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                        <input name="email" value={formData.email} type="email" required className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-structura-blue/20 focus:border-structura-blue shadow-sm" onChange={handleChange} onBlur={handleEmailBlur} placeholder="john@company.com" />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">Full Name *</label>
                                     <div className="relative">
                                         <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                         <input name="name" value={formData.name} required className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-structura-blue/20 focus:border-structura-blue shadow-sm" onChange={handleChange} placeholder="John Doe" />
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">Business Email *</label>
-                                    <div className="relative">
-                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                        <input name="email" value={formData.email} type="email" required className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-structura-blue/20 focus:border-structura-blue shadow-sm" onChange={handleChange} placeholder="john@company.com" />
                                     </div>
                                 </div>
                                 <div className="space-y-2">

@@ -118,7 +118,7 @@ export default function QuotesPage() {
             return {
                 'Quote Number': q.quotationId || 'N/A',
                 'Revision': `R${q.revisionNumber}`,
-                'Lead Name': q.leadId?.name || 'N/A',
+                'Company / Lead': q.leadId?.companyName || q.leadId?.name || 'N/A',
                 'Email': q.leadId?.email || 'N/A',
                 'Date': formatDate(q.createdAt),
                 'One-time Amount': q.grandTotal,
@@ -210,7 +210,7 @@ export default function QuotesPage() {
                                 </TableHead>
                                 <TableHead>Quote Number</TableHead>
                                 <TableHead>Revision</TableHead>
-                                <TableHead>Lead Name</TableHead>
+                                <TableHead>Company / Lead</TableHead>
                                 <TableHead>Date</TableHead>
                                 <TableHead>Amount</TableHead>
                                 <TableHead>Status</TableHead>
@@ -256,8 +256,8 @@ export default function QuotesPage() {
                                             <span className="bg-slate-100 px-2 py-0.5 rounded text-[10px] font-bold text-slate-600">R{quote.revisionNumber}</span>
                                         </TableCell>
                                         <TableCell>
-                                            <div className="font-medium">{quote.leadId?.name || 'Deleted Lead'}</div>
-                                            <div className="text-[10px] text-slate-400">{quote.leadId?.email}</div>
+                                            <div className="font-bold text-[15px] text-structura-black">{quote.leadId?.companyName || quote.leadId?.name || 'Deleted Lead'}</div>
+                                            <div className="text-xs text-slate-500 font-medium mt-0.5">{quote.leadId?.companyName ? quote.leadId?.name + " | " : ""}{quote.leadId?.email}</div>
                                         </TableCell>
                                         <TableCell className="text-xs text-slate-500">{formatDate(quote.createdAt)}</TableCell>
                                         <TableCell className="font-bold text-blue-700">

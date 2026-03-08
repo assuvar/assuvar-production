@@ -47,7 +47,7 @@ export default function ProjectsPage() {
                     <TableHeader>
                         <TableRow>
                             <TableHead>Project Name</TableHead>
-                            <TableHead>Sale Ref</TableHead>
+                            <TableHead>Company / Client</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Deadline</TableHead>
                             <TableHead className="text-right">Actions</TableHead>
@@ -66,8 +66,15 @@ export default function ProjectsPage() {
                                             {project.name}
                                         </Link>
                                     </TableCell>
-                                    <TableCell className="text-slate-600">
-                                        {project.saleId?.clientReference || 'N/A'}
+                                    <TableCell>
+                                        <div className="font-bold text-[15px] text-structura-black">
+                                            {project.saleId?.quoteId?.leadId?.companyName || project.saleId?.clientReference || 'N/A'}
+                                        </div>
+                                        {project.saleId?.quoteId?.leadId?.companyName && (
+                                            <div className="text-xs text-slate-500 font-medium mt-0.5">
+                                                {project.saleId?.quoteId?.leadId?.name}
+                                            </div>
+                                        )}
                                     </TableCell>
                                     <TableCell>
                                         <StatusBadge status={project.status} />
